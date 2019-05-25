@@ -6,7 +6,7 @@ import (
 	"github.com/weibaohui/mesh/types"
 
 	ntypes "github.com/rancher/mapper"
-  )
+)
 
 type ControllerRegister func(ctx context.Context, rContext *types.Context) error
 
@@ -61,6 +61,7 @@ func (f *FeatureController) Changed(feature *v1.Feature) error {
 }
 
 func (f *FeatureController) Start(ctx context.Context, feature *v1.Feature) error {
+
 
 	rContext := types.From(ctx)
 	for _, reg := range f.Controllers {

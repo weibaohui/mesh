@@ -59,6 +59,14 @@ type serviceHandler struct {
 }
 
 func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace, os *objectset.ObjectSet) error {
+	fmt.Println(" (s *serviceHandler) populate")
+	fmt.Println(" (s *serviceHandler) populate")
+	fmt.Println(" (s *serviceHandler) populate")
+	fmt.Println(" (s *serviceHandler) populate")
+	fmt.Println(" (s *serviceHandler) populate")
+	fmt.Println(" (s *serviceHandler) populate")
+
+	fmt.Println(obj)
 	service := obj.(*riov1.Service)
 	if service.Spec.DisableServiceMesh {
 		return nil
@@ -77,6 +85,14 @@ func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespac
 }
 
 func (s *serviceHandler) syncDomain(key string, svc *riov1.Service) (*riov1.Service, error) {
+	fmt.Println(" (s *serviceHandler) syncDomain")
+	fmt.Println(" (s *serviceHandler) syncDomain")
+	fmt.Println(" (s *serviceHandler) syncDomain")
+	fmt.Println(" (s *serviceHandler) syncDomain")
+	fmt.Println(" (s *serviceHandler) syncDomain")
+	fmt.Println(" (s *serviceHandler) syncDomain")
+	fmt.Println(" (s *serviceHandler) syncDomain")
+
 	if svc == nil {
 		return svc, nil
 	}

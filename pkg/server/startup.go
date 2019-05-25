@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/weibaohui/mesh/modules"
 	"github.com/weibaohui/mesh/pkg/constructors"
+	"github.com/weibaohui/mesh/pkg/controllers"
 	"github.com/weibaohui/mesh/types"
 
 	"github.com/rancher/wrangler/pkg/crd"
@@ -27,6 +28,7 @@ var Crds = append(crd.NonNamespacedTypes(
 	"Router.mesh.oauthd.com/v1",
 	"Service.mesh.oauthd.com/v1",
 	"Feature.mesh.oauthd.com/v1",
+	"ClusterDomain.mesh.oauthd.com/v1",
 
 
 	"DestinationRule.networking.istio.io/v1alpha3",
@@ -81,7 +83,7 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 
 	leader.RunOrDie(ctx, systemNamespace, "mesh", meshContext.K8s,
 		func(ctx context.Context) {
-			// runtime.Must(controllers.Register(ctx, meshContext))
+			runtime.Must(controllers.Register(ctx, meshContext))
 			runtime.Must(modules.Register(ctx, meshContext))
 			runtime.Must(meshContext.Start(ctx))
 			<-ctx.Done()

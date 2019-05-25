@@ -43,18 +43,3 @@ type AppStatus struct {
 	Conditions     []genericcondition.GenericCondition `json:"conditions,omitempty"`
 	RevisionWeight map[string]ServiceObservedWeight    `json:"revisionWeight,omitempty"`
 }
-
-type ScaleStatus struct {
-	// Total number of ready pods targeted by this deployment.
-	Ready int `json:"ready,omitempty"`
-
-	// Total number of unavailable pods targeted by this deployment. This is the total number of pods that are still required for the deployment to have 100% available capacity.
-	// They may either be pods that are running but not yet available or pods that still have not been created.
-	Unavailable int `json:"unavailable,omitempty"`
-
-	// Total number of available pods (ready for at least minReadySeconds) targeted by this deployment.
-	Available int `json:"available,omitempty"`
-
-	// Total number of non-terminated pods targeted by this deployment that have the desired template spec.
-	Updated int `json:"updated,omitempty"`
-}

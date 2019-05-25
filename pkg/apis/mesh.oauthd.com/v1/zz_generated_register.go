@@ -38,10 +38,16 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&App{},
 		&AppList{},
+		&ClusterDomain{},
+		&ClusterDomainList{},
 		&ExternalService{},
 		&ExternalServiceList{},
+		&Feature{},
+		&FeatureList{},
 		&Router{},
 		&RouterList{},
+		&Service{},
+		&ServiceList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

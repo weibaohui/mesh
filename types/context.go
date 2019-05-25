@@ -45,6 +45,7 @@ func NewContext(namespace string, config *rest.Config) *Context {
 		Networking: networking.NewFactoryFromConfigOrDie(config),
 		RBAC:       rbac.NewFactoryFromConfigOrDie(config),
 		K8s:        kubernetes.NewForConfigOrDie(config),
+		Mesh:       mesh.NewFactoryFromConfigOrDie(config),
 	}
 
 	context.Apply = apply.New(context.K8s.Discovery(), apply.NewClientFactory(config))
@@ -59,6 +60,7 @@ func (c *Context) Start(ctx context.Context) error {
 		c.Ext,
 		c.Networking,
 		c.RBAC,
+		c.Mesh,
 	)
 }
 

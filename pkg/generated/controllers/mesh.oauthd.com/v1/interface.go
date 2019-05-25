@@ -15,8 +15,11 @@ import (
 
 type Interface interface {
 	App() AppController
+	ClusterDomain() ClusterDomainController
 	ExternalService() ExternalServiceController
+	Feature() FeatureController
 	Router() RouterController
+	Service() ServiceController
 }
 
 func New(controllerManager *generic.ControllerManager, client clientset.MeshV1Interface,
@@ -37,9 +40,18 @@ type version struct {
 func (c *version) App() AppController {
 	return NewAppController(v1.SchemeGroupVersion.WithKind("App"), c.controllerManager, c.client, c.informers.Apps())
 }
+func (c *version) ClusterDomain() ClusterDomainController {
+	return NewClusterDomainController(v1.SchemeGroupVersion.WithKind("ClusterDomain"), c.controllerManager, c.client, c.informers.ClusterDomains())
+}
 func (c *version) ExternalService() ExternalServiceController {
 	return NewExternalServiceController(v1.SchemeGroupVersion.WithKind("ExternalService"), c.controllerManager, c.client, c.informers.ExternalServices())
 }
+func (c *version) Feature() FeatureController {
+	return NewFeatureController(v1.SchemeGroupVersion.WithKind("Feature"), c.controllerManager, c.client, c.informers.Features())
+}
 func (c *version) Router() RouterController {
 	return NewRouterController(v1.SchemeGroupVersion.WithKind("Router"), c.controllerManager, c.client, c.informers.Routers())
+}
+func (c *version) Service() ServiceController {
+	return NewServiceController(v1.SchemeGroupVersion.WithKind("Service"), c.controllerManager, c.client, c.informers.Services())
 }

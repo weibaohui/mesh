@@ -16,8 +16,11 @@ import (
 type MeshV1Interface interface {
 	RESTClient() rest.Interface
 	AppsGetter
+	ClusterDomainsGetter
 	ExternalServicesGetter
+	FeaturesGetter
 	RoutersGetter
+	ServicesGetter
 }
 
 // MeshV1Client is used to interact with features provided by the mesh.oauthd.com group.
@@ -29,12 +32,24 @@ func (c *MeshV1Client) Apps(namespace string) AppInterface {
 	return newApps(c, namespace)
 }
 
+func (c *MeshV1Client) ClusterDomains(namespace string) ClusterDomainInterface {
+	return newClusterDomains(c, namespace)
+}
+
 func (c *MeshV1Client) ExternalServices(namespace string) ExternalServiceInterface {
 	return newExternalServices(c, namespace)
 }
 
+func (c *MeshV1Client) Features(namespace string) FeatureInterface {
+	return newFeatures(c, namespace)
+}
+
 func (c *MeshV1Client) Routers(namespace string) RouterInterface {
 	return newRouters(c, namespace)
+}
+
+func (c *MeshV1Client) Services(namespace string) ServiceInterface {
+	return newServices(c, namespace)
 }
 
 // NewForConfig creates a new MeshV1Client for the given config.

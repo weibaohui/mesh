@@ -8,6 +8,12 @@ package v1
 
 type AppExpansion interface{}
 
+type ClusterDomainExpansion interface{}
+
 type ExternalServiceExpansion interface{}
 
+type FeatureExpansion interface{}
+
 type RouterExpansion interface{}
+
+type ServiceExpansion interface{}

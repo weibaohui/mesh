@@ -18,4 +18,5 @@ var (
 	Prometheus               = "prometheus"
 	MeshGateway              = "mesh-gateway"
 	StagingType              = "staging"
+	ClusterDomainName        = "cluster.local"
 )

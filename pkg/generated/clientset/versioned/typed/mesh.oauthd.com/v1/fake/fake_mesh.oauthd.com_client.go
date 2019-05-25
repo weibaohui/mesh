@@ -20,12 +20,24 @@ func (c *FakeMeshV1) Apps(namespace string) v1.AppInterface {
 	return &FakeApps{c, namespace}
 }
 
+func (c *FakeMeshV1) ClusterDomains(namespace string) v1.ClusterDomainInterface {
+	return &FakeClusterDomains{c, namespace}
+}
+
 func (c *FakeMeshV1) ExternalServices(namespace string) v1.ExternalServiceInterface {
 	return &FakeExternalServices{c, namespace}
 }
 
+func (c *FakeMeshV1) Features(namespace string) v1.FeatureInterface {
+	return &FakeFeatures{c, namespace}
+}
+
 func (c *FakeMeshV1) Routers(namespace string) v1.RouterInterface {
 	return &FakeRouters{c, namespace}
+}
+
+func (c *FakeMeshV1) Services(namespace string) v1.ServiceInterface {
+	return &FakeServices{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate

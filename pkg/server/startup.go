@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/weibaohui/mesh/modules"
 	"github.com/weibaohui/mesh/pkg/constructors"
 	"github.com/weibaohui/mesh/types"
 
@@ -21,10 +22,11 @@ var Crds = append(crd.NonNamespacedTypes(
 	"BuildTemplate.build.knative.dev/v1alpha1",
 	"Image.caching.internal.knative.dev/v1alpha1",
 
-	"App.mesh.cattle.io/v1",
-	"ExternalService.mesh.oauthd.io/v1",
-	"Router.mesh.oauthd.io/v1",
-	"Service.mesh.oauthd.io/v1",
+	"App.mesh.oauthd.com/v1",
+	"ExternalService.mesh.oauthd.com/v1",
+	"Router.mesh.oauthd.com/v1",
+	"Service.mesh.oauthd.com/v1",
+	"Feature.mesh.oauthd.com/v1",
 
 
 	"DestinationRule.networking.istio.io/v1alpha3",
@@ -80,7 +82,7 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 	leader.RunOrDie(ctx, systemNamespace, "mesh", meshContext.K8s,
 		func(ctx context.Context) {
 			// runtime.Must(controllers.Register(ctx, meshContext))
-			// runtime.Must(modules.Register(ctx, meshContext))
+			runtime.Must(modules.Register(ctx, meshContext))
 			runtime.Must(meshContext.Start(ctx))
 			<-ctx.Done()
 		})

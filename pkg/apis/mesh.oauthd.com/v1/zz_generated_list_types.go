@@ -62,3 +62,54 @@ func NewApp(namespace, name string, obj App) *App {
 	obj.Namespace = namespace
 	return &obj
 }
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// FeatureList is a list of Feature resources
+type FeatureList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+
+	Items []Feature `json:"items"`
+}
+
+func NewFeature(namespace, name string, obj Feature) *Feature {
+	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("Feature").ToAPIVersionAndKind()
+	obj.Name = name
+	obj.Namespace = namespace
+	return &obj
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// ServiceList is a list of Service resources
+type ServiceList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+
+	Items []Service `json:"items"`
+}
+
+func NewService(namespace, name string, obj Service) *Service {
+	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("Service").ToAPIVersionAndKind()
+	obj.Name = name
+	obj.Namespace = namespace
+	return &obj
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// ClusterDomainList is a list of ClusterDomain resources
+type ClusterDomainList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata"`
+
+	Items []ClusterDomain `json:"items"`
+}
+
+func NewClusterDomain(namespace, name string, obj ClusterDomain) *ClusterDomain {
+	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("ClusterDomain").ToAPIVersionAndKind()
+	obj.Name = name
+	obj.Namespace = namespace
+	return &obj
+}

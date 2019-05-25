@@ -32,7 +32,7 @@ var (
 
 func main() {
 	app := cli.NewApp()
-	app.Name = "rio-controller"
+	app.Name = "mesh-controller"
 	app.Version = fmt.Sprintf("%s (%s)", version.Version, version.GitCommit)
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -42,13 +42,13 @@ func main() {
 		},
 		cli.StringFlag{
 			Name:        "namespace",
-			EnvVar:      "RIO_NAMESPACE",
-			Value:       "rio-system",
+			EnvVar:      "MESH_NAMESPACE",
+			Value:       "mesh-system",
 			Destination: &namespace,
 		},
 		cli.BoolFlag{
 			Name:        "debug",
-			EnvVar:      "RIO_DEBUG",
+			EnvVar:      "MESH_DEBUG",
 			Destination: &debug,
 		},
 		cli.StringFlag{
@@ -109,7 +109,7 @@ func run(c *cli.Context) error {
 	kubeconfig = strings.Replace(kubeconfig, "${HOME}", homeDir, -1)
 	kubeconfig = strings.Replace(kubeconfig, "$HOME", homeDir, -1)
 
-	if os.Getenv("RIO_IN_CLUSTER") != "" {
+	if os.Getenv("MESH_IN_CLUSTER") != "" {
 		kubeconfig = ""
 	}
 

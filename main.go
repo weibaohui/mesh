@@ -17,17 +17,16 @@ import (
 	"os"
 	"strings"
 
-  	"github.com/rancher/wrangler/pkg/signals"
+	"github.com/rancher/wrangler/pkg/signals"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"k8s.io/klog"
 )
 
 var (
-	debug          bool
-	kubeconfig     string
-	namespace      string
-	customRegistry string
+	debug      bool
+	kubeconfig string
+	namespace  string
 )
 
 func main() {

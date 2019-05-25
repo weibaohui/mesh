@@ -8,9 +8,9 @@ import (
 	"github.com/rancher/wrangler-api/pkg/generated/controllers/extensions"
 	"github.com/rancher/wrangler-api/pkg/generated/controllers/networking.istio.io"
 	"github.com/rancher/wrangler-api/pkg/generated/controllers/rbac"
-	"github.com/rancher/wrangler-api/pkg/generated/controllers/storage"
 	"github.com/rancher/wrangler/pkg/apply"
 	"github.com/rancher/wrangler/pkg/start"
+	"github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
@@ -27,8 +27,8 @@ type Context struct {
 	K8s        kubernetes.Interface
 	Networking *networking.Factory
 	RBAC       *rbac.Factory
-	Storage    *storage.Factory
- 	Apply apply.Apply
+	Mesh       *mesh.Factory
+	Apply      apply.Apply
 }
 
 func From(ctx context.Context) *Context {
@@ -44,7 +44,6 @@ func NewContext(namespace string, config *rest.Config) *Context {
 		Extensions: extensions.NewFactoryFromConfigOrDie(config),
 		Networking: networking.NewFactoryFromConfigOrDie(config),
 		RBAC:       rbac.NewFactoryFromConfigOrDie(config),
-		Storage:    storage.NewFactoryFromConfigOrDie(config),
 		K8s:        kubernetes.NewForConfigOrDie(config),
 	}
 
@@ -60,7 +59,6 @@ func (c *Context) Start(ctx context.Context) error {
 		c.Ext,
 		c.Networking,
 		c.RBAC,
-		c.Storage,
 	)
 }
 

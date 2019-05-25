@@ -77,7 +77,7 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 		}
 	}
 
-	leader.RunOrDie(ctx, systemNamespace, "rio", meshContext.K8s,
+	leader.RunOrDie(ctx, systemNamespace, "mesh", meshContext.K8s,
 		func(ctx context.Context) {
 			// runtime.Must(controllers.Register(ctx, meshContext))
 			// runtime.Must(modules.Register(ctx, meshContext))

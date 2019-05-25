@@ -28,8 +28,7 @@ type Context struct {
 	Networking *networking.Factory
 	RBAC       *rbac.Factory
 	Storage    *storage.Factory
-
-	Apply apply.Apply
+ 	Apply apply.Apply
 }
 
 func From(ctx context.Context) *Context {

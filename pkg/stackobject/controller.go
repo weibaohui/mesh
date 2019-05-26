@@ -2,7 +2,12 @@ package stackobject
 
 import (
 	"context"
+	"fmt"
+	"github.com/rancher/mapper/convert"
+	"github.com/rancher/wrangler/pkg/condition"
+	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/types"
+	"strings"
 
 	"github.com/pkg/errors"
 	corev1controller "github.com/rancher/wrangler-api/pkg/generated/controllers/core/v1"
@@ -86,6 +91,33 @@ func (o *Controller) OnChange(key string, obj runtime.Object) (runtime.Object, e
 		os.AddErr(err)
 	}
 
+	desireset := o.Apply.WithOwner(obj)
+	if svc, ok := obj.(*v1.Service); ok && !svc.Spec.DisableServiceMesh {
+		for _, i := range o.injectors {
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			fmt.Println(i,"自动注入启动")
+			desireset = desireset.WithInjectorName(i)
+		}
+	}
+	return obj, o.getCondition().Do(func() (runtime.Object, error) {
+		return obj, desireset.Apply(os)
+	})
 	return obj, nil
 
+}
+
+func (o *Controller) getCondition() condition.Cond {
+	buffer := strings.Builder{}
+	buffer.WriteString(string(v1.DeployedCondition))
+	for _, part := range strings.Split(o.name, "-") {
+		buffer.WriteString(convert.Capitalize(part))
+	}
+	return condition.Cond(buffer.String())
 }

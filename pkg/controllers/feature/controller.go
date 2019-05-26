@@ -59,7 +59,7 @@ func (f *featureHandler) syncAll() error {
 		})
 		if feature.IsSystem() {
 			featureObj.Labels = map[string]string{
-				"rio.cattle.io/system": "true",
+				"mesh.oauthd.com/system": "true",
 			}
 		}
 		os.Add(featureObj)

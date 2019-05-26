@@ -13,13 +13,6 @@ import (
 )
 
 func Register(ctx context.Context, mContext *types.Context) error {
-	 mContext.Apply.WithCacheTypes(
-		mContext.Mesh.Mesh().V1().App(),
-		mContext.Mesh.Mesh().V1().ExternalService(),
-		mContext.Mesh.Mesh().V1().Router(),
-		mContext.Mesh.Mesh().V1().Feature(),
-		mContext.Mesh.Mesh().V1().Service(),
-		mContext.Core.Core().V1().ConfigMap())
 	feature := &features.FeatureController{
 		FeatureName: "istio",
 		FeatureSpec: v1.FeatureSpec{

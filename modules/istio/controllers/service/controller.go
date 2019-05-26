@@ -26,25 +26,26 @@ const (
 	appDomainHandler    = "app-domain-update"
 )
 
-func Register(ctx context.Context, rContext *types.Context) error {
-	c := stackobject.NewGeneratingController(ctx, rContext, "routing-service", rContext.Mesh.Mesh().V1().Service())
+func Register(ctx context.Context, mContext *types.Context) error {
+	c := stackobject.NewGeneratingController(ctx, mContext, "routing-service", mContext.Mesh.Mesh().V1().Service())
 	c.Apply = c.Apply.WithStrictCaching().
-		WithCacheTypes(rContext.Networking.Networking().V1alpha3().DestinationRule(),
-			rContext.Networking.Networking().V1alpha3().VirtualService(),
-			rContext.Extensions.Extensions().V1beta1().Ingress())
+		WithCacheTypes(
+			mContext.Mesh.Mesh().V1().Service(),
+			mContext.Networking.Networking().V1alpha3().DestinationRule(),
+			mContext.Networking.Networking().V1alpha3().VirtualService(),
+			mContext.Extensions.Extensions().V1beta1().Ingress())
 
 	sh := &serviceHandler{
-		systemNamespace:      rContext.Namespace,
-		serviceClient:        rContext.Mesh.Mesh().V1().Service(),
-		serviceCache:         rContext.Mesh.Mesh().V1().Service().Cache(),
-		secretCache:          rContext.Core.Core().V1().Secret().Cache(),
-		externalServiceCache: rContext.Mesh.Mesh().V1().ExternalService().Cache(),
-		clusterDomainCache:   rContext.Mesh.Mesh().V1().ClusterDomain().Cache(),
+		systemNamespace:      mContext.Namespace,
+		serviceClient:        mContext.Mesh.Mesh().V1().Service(),
+		serviceCache:         mContext.Mesh.Mesh().V1().Service().Cache(),
+		secretCache:          mContext.Core.Core().V1().Secret().Cache(),
+		externalServiceCache: mContext.Mesh.Mesh().V1().ExternalService().Cache(),
+		clusterDomainCache:   mContext.Mesh.Mesh().V1().ClusterDomain().Cache(),
 	}
 
-	rContext.Mesh.Mesh().V1().Service().OnChange(ctx, serviceDomainUpdate, riov1controller.UpdateServiceOnChange(rContext.Mesh.Mesh().V1().Service().Updater(), sh.syncDomain))
-	rContext.Mesh.Mesh().V1().App().OnChange(ctx, appDomainHandler, riov1controller.UpdateAppOnChange(rContext.Mesh.Mesh().V1().App().Updater(), sh.syncAppDomain))
-
+	mContext.Mesh.Mesh().V1().Service().OnChange(ctx, serviceDomainUpdate, riov1controller.UpdateServiceOnChange(mContext.Mesh.Mesh().V1().Service().Updater(), sh.syncDomain))
+	mContext.Mesh.Mesh().V1().App().OnChange(ctx, appDomainHandler, riov1controller.UpdateAppOnChange(mContext.Mesh.Mesh().V1().App().Updater(), sh.syncAppDomain))
 	c.Populator = sh.populate
 	return nil
 }
@@ -59,15 +60,9 @@ type serviceHandler struct {
 }
 
 func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace, os *objectset.ObjectSet) error {
-	fmt.Println(" (s *serviceHandler) populate")
-	fmt.Println(" (s *serviceHandler) populate")
-	fmt.Println(" (s *serviceHandler) populate")
-	fmt.Println(" (s *serviceHandler) populate")
-	fmt.Println(" (s *serviceHandler) populate")
-	fmt.Println(" (s *serviceHandler) populate")
 
-	fmt.Println(obj)
-	service := obj.(*riov1.Service)
+
+ 	service := obj.(*riov1.Service)
 	if service.Spec.DisableServiceMesh {
 		return nil
 	}
@@ -85,13 +80,7 @@ func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespac
 }
 
 func (s *serviceHandler) syncDomain(key string, svc *riov1.Service) (*riov1.Service, error) {
-	fmt.Println(" (s *serviceHandler) syncDomain")
-	fmt.Println(" (s *serviceHandler) syncDomain")
-	fmt.Println(" (s *serviceHandler) syncDomain")
-	fmt.Println(" (s *serviceHandler) syncDomain")
-	fmt.Println(" (s *serviceHandler) syncDomain")
-	fmt.Println(" (s *serviceHandler) syncDomain")
-	fmt.Println(" (s *serviceHandler) syncDomain")
+
 
 	if svc == nil {
 		return svc, nil
@@ -134,7 +123,6 @@ func updateAppDomain(app *riov1.App, clusterDomain *adminv1.ClusterDomain) {
 			break
 		}
 	}
-
 	protocol := "http"
 	if clusterDomain.Status.HTTPSSupported {
 		protocol = "https"

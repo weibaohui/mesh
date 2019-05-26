@@ -8,6 +8,7 @@ var (
 	ServiceCidr              = ""
 	DefaultServiceVersion    = "v0"
 	GatewaySecretName        = "mesh-certs"
+	IstioVersion             = "1.1.7"
 	IstioGateway             = "istio-gateway"
 	IstioMeshConfigKey       = "meshConfig"
 	IstionConfigMapName      = "mesh"

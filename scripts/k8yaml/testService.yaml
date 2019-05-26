@@ -1,0 +1,18 @@
+apiVersion: mesh.oauthd.com/v1
+kind: Service
+metadata:
+  name: xxxxxx
+  namespace: default
+spec:
+  version: v3
+  concurrency: 32
+  cpus: "1"
+  image: nginx:alpine
+  imagePullPolicy: IfNotPresent
+  maxScale: 1
+  minScale: 1
+  ports:
+    - port: 80
+      protocol: HTTP
+      targetPort: 80
+  weight: 100

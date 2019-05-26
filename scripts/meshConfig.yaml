@@ -1,0 +1,19 @@
+disablePolicyChecks: true
+ingressControllerMode: "OFF"
+authPolicy: NONE
+rdsRefreshDelay: 10s
+mixerReportServer: istio-telemetry.rio-system.svc.cluster.local:9091
+outboundTrafficPolicy:
+  mode: ALLOW_ANY
+defaultConfig:
+  discoveryRefreshDelay: 10s
+  connectTimeout: 30s
+  configPath: "/etc/istio/proxy"
+  binaryPath: "/usr/local/bin/envoy"
+  serviceCluster: istio-proxy
+  drainDuration: 45s
+  parentShutdownDuration: 1m0s
+  interceptionMode: REDIRECT
+  proxyAdminPort: 15000
+  controlPlaneAuthPolicy: NONE
+  discoveryAddress: istio-pilot.rio-system:15010

@@ -72,6 +72,7 @@ func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespac
 		return err
 	}
 
+
 	if err := populate.DestinationRulesAndVirtualServices(s.systemNamespace, clusterDomain, service, os); err != nil {
 		return err
 	}

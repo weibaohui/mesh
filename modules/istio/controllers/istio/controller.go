@@ -192,15 +192,7 @@ func enqueueServicesForInject(controller riov1controller.ServiceController) erro
 	if err != nil {
 		return err
 	}
-
 	for _, svc := range svcs {
-		fmt.Println("ForInject",svc.Namespace, svc.Name)
-		fmt.Println("ForInject",svc.Namespace, svc.Name)
-		fmt.Println("ForInject",svc.Namespace, svc.Name)
-		fmt.Println("ForInject",svc.Namespace, svc.Name)
-		fmt.Println("ForInject",svc.Namespace, svc.Name)
-		fmt.Println("ForInject",svc.Namespace, svc.Name)
-		fmt.Println("ForInject",svc.Namespace, svc.Name)
 		controller.Enqueue(svc.Namespace, svc.Name)
 	}
 	return nil

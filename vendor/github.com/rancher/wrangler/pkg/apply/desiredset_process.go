@@ -17,6 +17,8 @@ import (
 	types2 "k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/cache"
+	"sigs.k8s.io/yaml"
+
 )
 
 var (
@@ -110,7 +112,13 @@ func (o *desiredSet) process(debugID string, set labels.Selector, gvk schema.Gro
 			o.err(errors.Wrapf(err, "failed to prepare create %s %s for %s", k, gvk, debugID))
 			return
 		}
-
+		bytes, _ := yaml.Marshal(obj)
+		fmt.Println("创建资源",string(bytes))
+		fmt.Println("创建资源",string(bytes))
+		fmt.Println("创建资源",string(bytes))
+		fmt.Println("创建资源",string(bytes))
+		fmt.Println("创建资源",string(bytes))
+		fmt.Println("创建资源",string(bytes))
 		_, err = o.create(nsed, k.Namespace, client, obj)
 		if errors2.IsAlreadyExists(err) {
 			// Taking over an object that wasn't previously managed by us

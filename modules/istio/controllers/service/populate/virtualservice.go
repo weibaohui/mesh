@@ -196,7 +196,8 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, names
 
 	if external {
 		externalGW := domains.GetPublicGateway(systemNamespace)
-		externalHost := ""
+		externalHost := domains.GetExternalDomain(name, namespace, "oauthd.com")
+
 		spec.Gateways = append(spec.Gateways, externalGW)
 		spec.Hosts = append(spec.Hosts, externalHost)
 	}

@@ -2,7 +2,6 @@ package stackobject
 
 import (
 	"context"
-	"fmt"
 	"github.com/rancher/mapper/convert"
 	"github.com/rancher/wrangler/pkg/condition"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
@@ -94,15 +93,6 @@ func (o *Controller) OnChange(key string, obj runtime.Object) (runtime.Object, e
 	desireset := o.Apply.WithOwner(obj)
 	if svc, ok := obj.(*v1.Service); ok && !svc.Spec.DisableServiceMesh {
 		for _, i := range o.injectors {
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
-			fmt.Println(i,"自动注入启动")
 			desireset = desireset.WithInjectorName(i)
 		}
 	}

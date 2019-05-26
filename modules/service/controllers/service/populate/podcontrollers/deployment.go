@@ -1,7 +1,6 @@
 package podcontrollers
 
 import (
-	"fmt"
 	"github.com/rancher/wrangler/pkg/objectset"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
@@ -10,8 +9,6 @@ import (
 )
 
 func deployment(service *riov1.Service, cp *controllerParams, os *objectset.ObjectSet) {
-	fmt.Println("deployment",service.Name,cp,os)
-
 	dep := constructors.NewDeployment(service.Namespace, service.Name, appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels:      cp.Labels,

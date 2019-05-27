@@ -24,7 +24,9 @@ spec:
     - mesh-gateway
     - mesh-gateway.mesh-system.svc.cluster.local
   hosts:
-    - xxxxxx
+#    - xxxxxx-default.oauthd.com
+#    - xxxxxx
+     - "*"
   http:
     - match:
         - gateways:

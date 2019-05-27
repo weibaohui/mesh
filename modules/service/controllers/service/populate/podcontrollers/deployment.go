@@ -1,18 +1,14 @@
 package podcontrollers
 
 import (
-	"fmt"
 	"github.com/rancher/wrangler/pkg/objectset"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
-	"github.com/weibaohui/mesh/pkg/utils"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func deployment(service *riov1.Service, cp *controllerParams, os *objectset.ObjectSet) {
-	fmt.Println("deployment",service.Name,cp,os)
-
 	dep := constructors.NewDeployment(service.Namespace, service.Name, appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels:      cp.Labels,
@@ -42,8 +38,7 @@ func deployment(service *riov1.Service, cp *controllerParams, os *objectset.Obje
 	}
 
 	os.Add(dep)
-	utils.YamlToJson(dep)
-}
+ }
 
 func daemonset(service *riov1.Service, cp *controllerParams, os *objectset.ObjectSet) {
 	ds := constructors.NewDaemonset(service.Namespace, service.Name, appsv1.Deployment{

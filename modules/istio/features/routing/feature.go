@@ -13,6 +13,7 @@ import (
 )
 
 func Register(ctx context.Context, mContext *types.Context) error {
+
 	feature := &features.FeatureController{
 		FeatureName: "istio",
 		FeatureSpec: v1.FeatureSpec{

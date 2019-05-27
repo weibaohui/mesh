@@ -20,11 +20,11 @@ import (
 )
 
 const (
-	LabelID        = "objectset.rio.cattle.io/id"
-	LabelGVK       = "objectset.rio.cattle.io/owner-gvk"
-	LabelName      = "objectset.rio.cattle.io/owner-name"
-	LabelNamespace = "objectset.rio.cattle.io/owner-namespace"
-	LabelHash      = "objectset.rio.cattle.io/hash"
+	LabelID        = "objectset.mesh.oauthd.com/id"
+	LabelGVK       = "objectset.mesh.oauthd.com/owner-gvk"
+	LabelName      = "objectset.mesh.oauthd.com/owner-name"
+	LabelNamespace = "objectset.mesh.oauthd.com/owner-namespace"
+	LabelHash      = "objectset.mesh.oauthd.com/hash"
 )
 
 var (

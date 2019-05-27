@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	privateGw           = "mesh"
+	privateGw           = "mesh-gateway"
 	MeshNameHeader      = "X-Mesh-ServiceName"
 	MeshNamespaceHeader = "X-Mesh-Namespace"
 	MeshPortHeader      = "X-Mesh-ServicePort"

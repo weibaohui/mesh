@@ -100,7 +100,7 @@ func Register(ctx context.Context, mContext *types.Context) error {
 	}
 
 	mContext.Core.Core().V1().Service().OnChange(ctx, "rdns-subdomain", s.syncSubdomain)
-	// mContext.Mesh.Mesh().V1().ClusterDomain().OnChange(ctx, "clusterdomain-gateway", s.syncGateway)
+	mContext.Mesh.Mesh().V1().ClusterDomain().OnChange(ctx, "clusterdomain-gateway", s.syncGateway)
 
 	mContext.Core.Core().V1().Node().OnChange(ctx, "gateway-daemonset-update", s.onChangeNode)
 

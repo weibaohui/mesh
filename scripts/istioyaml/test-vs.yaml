@@ -1,34 +1,40 @@
 apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: mesh-gateway
+  namespace: mesh-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - hosts:
+        - "*"
+      port:
+        name: http-9080
+        number: 80
+        protocol: HTTP
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  annotations:
-    objectset.rio.cattle.io/applied: '{"kind":"VirtualService","apiVersion":"networking.istio.io/v1alpha3","metadata":{"name":"xxxxxx-v3","namespace":"default","creationTimestamp":null,"labels":{"objectset.rio.cattle.io/hash":"6eddc47a0f5e8e59d253ec6022892f0331fffc0f"},"annotations":{"objectset.rio.cattle.io/id":"routing-service","objectset.rio.cattle.io/owner-gvk":"/,
-      Kind=","objectset.rio.cattle.io/owner-name":"xxxxxx","objectset.rio.cattle.io/owner-namespace":"default"}},"spec":{"hosts":["xxxxxx-v3-default."],"gateways":["mesh","mesh-gateway.mesh-system.svc.cluster.local"],"http":[{"match":[{"port":9080,"gateways":["mesh","mesh-gateway.mesh-system.svc.cluster.local"]},{"port":9443,"gateways":["mesh","mesh-gateway.mesh-system.svc.cluster.local"]}],"route":[{"destination":{"host":"xxxxxx.default.svc.cluster.local","subset":"v3","port":{"number":80}},"weight":100}]}]}}'
-    objectset.rio.cattle.io/id: routing-service
-    objectset.rio.cattle.io/owner-gvk: /, Kind=
-    objectset.rio.cattle.io/owner-name: xxxxxx
-    objectset.rio.cattle.io/owner-namespace: default
-  creationTimestamp: null
-  labels:
-    objectset.rio.cattle.io/hash: 6eddc47a0f5e8e59d253ec6022892f0331fffc0f
-  name: xxxxxx-v3
+  name: xxxxxx
   namespace: default
 spec:
   gateways:
-    - mesh
+    - mesh-gateway
     - mesh-gateway.mesh-system.svc.cluster.local
   hosts:
-    - xxxxxx-v3-default
+    - xxxxxx
   http:
     - match:
         - gateways:
-            - mesh
+            - mesh-gateway
             - mesh-gateway.mesh-system.svc.cluster.local
-          port: 9080
+          port: 80
         - gateways:
-            - mesh
+            - mesh-gateway
             - mesh-gateway.mesh-system.svc.cluster.local
-          port: 9443
+          port: 443
       route:
         - destination:
             host: xxxxxx.default.svc.cluster.local
@@ -36,3 +42,15 @@ spec:
               number: 80
             subset: v3
           weight: 100
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: xxxxxx
+  namespace: default
+spec:
+  host: xxxxxx.default.svc.cluster.local
+  subsets:
+    - labels:
+        version: v3
+      name: v3

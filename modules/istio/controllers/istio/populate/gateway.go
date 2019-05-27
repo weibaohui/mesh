@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/constructors"
-	"github.com/weibaohui/mesh/pkg/utils"
 	"strconv"
 	"strings"
 
@@ -57,7 +56,6 @@ func Gateway(systemNamespace string, clusterDomain string, output *objectset.Obj
 	gateway := constructors.NewGateway(systemNamespace, constants.MeshGateway, v1alpha3.Gateway{
 		Spec: gws,
 	})
-	//todo
-	utils.YamlToJson(gateway)
+
 	output.Add(gateway)
 }

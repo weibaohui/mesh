@@ -8,6 +8,7 @@ import (
 	"github.com/weibaohui/mesh/pkg/services"
 	"github.com/weibaohui/mesh/pkg/serviceset"
 	"strconv"
+	"strings"
 
 	"github.com/knative/pkg/apis/istio/v1alpha3"
 	"github.com/rancher/wrangler/pkg/objectset"
@@ -25,7 +26,37 @@ const (
 
 func virtualServices(namespace string, clusterDomain *v1.ClusterDomain, service *v1.Service, os *objectset.ObjectSet) error {
 	os.Add(virtualServiceFromService(namespace, clusterDomain, service)...)
+	os.Add(gateWay(namespace, clusterDomain, service)...)
 	return nil
+}
+
+// 给vs 创建匹配的gw
+func gateWay(systemNamespace string, clusterDomain *v1.ClusterDomain, service *v1.Service) []runtime.Object {
+	var result []runtime.Object
+
+	// Istio Gateway
+	gws := v1alpha3.GatewaySpec{
+		Selector: map[string]string{
+			"istio": constants.IstioGateway,
+		},
+	}
+	httpPort, _ := strconv.ParseInt(constants.DefaultHTTPOpenPort, 10, 0)
+	externalHost := domains.GetExternalDomainDot(service.Name, service.Namespace, "oauthd.com")
+	gws.Servers = append(gws.Servers, v1alpha3.Server{
+		Port: v1alpha3.Port{
+			Protocol: v1alpha3.ProtocolHTTP,
+			Number:   int(httpPort),
+			Name:     fmt.Sprintf("%v-%v", strings.ToLower(string(v1alpha3.ProtocolHTTP)), httpPort),
+		},
+		Hosts: []string{externalHost},
+	})
+
+	gateway := constructors.NewGateway(service.Namespace, service.Name+"-gateway", v1alpha3.Gateway{
+		Spec: gws,
+	})
+
+	result = append(result, gateway)
+	return result
 }
 
 func httpRoutes(systemNamespace string, service *v1.Service, dests []Dest) ([]v1alpha3.HTTPRoute, bool) {
@@ -180,9 +211,8 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, names
 
 	vs := newVirtualService(name, namespace)
 
-	//todo 1.1.7版本中绑定了gw 后，有问题，暂时先把vs跟gw解绑
 	spec := v1alpha3.VirtualServiceSpec{
-		Gateways: []string{},
+		Gateways: []string{privateGw},
 		HTTP:     routes,
 	}
 	if aggregated {
@@ -198,14 +228,15 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, names
 
 	if external {
 		externalGW := domains.GetPublicGateway(systemNamespace)
-		externalHost := domains.GetExternalDomain(name, namespace, "oauthd.com")
-
 		spec.Gateways = append(spec.Gateways, externalGW)
+
+		//加入vs自己关联的gateway
+		spec.Gateways = append(spec.Gateways, service.Name+"-gateway",)
+
+		externalHost := domains.GetExternalDomainDot(service.Name, service.Namespace, "oauthd.com")
 		spec.Hosts = append(spec.Hosts, externalHost)
 	}
 
-	//todo 1.1.7版本中绑定了gw 后，有问题，暂时先把vs跟gw解绑
-	spec.Hosts = []string{"*"}
 	vs.Spec = spec
 	return vs
 }

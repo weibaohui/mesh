@@ -1,28 +1,43 @@
 apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: whoami-gateway
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "whoami.oauthd.com"
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: whoami-v3
+  name: whoami
   namespace: default
 spec:
   gateways:
-    - mesh-gateway.mesh-system.svc.cluster.local
+    - whoami-gateway
   hosts:
     - whoami.oauthd.com
   http:
     - match:
         - gateways:
             - mesh
-            - mesh-gateway.mesh-system.svc.cluster.local
+            - whoami-gateway
           port: 80
         - gateways:
             - mesh
-            - mesh-gateway.mesh-system.svc.cluster.local
+            - whoami-gateway
           port: 443
       route:
         - destination:
             host: whoami.default.svc.cluster.local
             port:
-              number: 80
+              number: 8000
             subset: v3
           weight: 100
 

@@ -12,7 +12,7 @@ spec:
   maxScale: 1
   minScale: 1
   ports:
-    - port: 80
+    - port: 8000
       protocol: HTTP
-      targetPort: 80
+      targetPort: 8000
   weight: 100

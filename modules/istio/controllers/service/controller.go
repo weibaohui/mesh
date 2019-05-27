@@ -31,6 +31,7 @@ func Register(ctx context.Context, mContext *types.Context) error {
 	c.Apply = c.Apply.WithStrictCaching().
 		WithCacheTypes(
 			mContext.Mesh.Mesh().V1().Service(),
+			mContext.Networking.Networking().V1alpha3().Gateway(),
 			mContext.Networking.Networking().V1alpha3().DestinationRule(),
 			mContext.Networking.Networking().V1alpha3().VirtualService(),
 			mContext.Extensions.Extensions().V1beta1().Ingress())

@@ -7,5 +7,4 @@ import (
 
 func Populate(service *riov1.Service, systemNamespace string, os *objectset.ObjectSet) {
 	serviceSelector(service, systemNamespace, os)
-	serviceSelector2(service, systemNamespace, os)
  }

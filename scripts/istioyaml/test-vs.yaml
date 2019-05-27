@@ -8,7 +8,7 @@ spec:
     istio: ingressgateway
   servers:
     - hosts:
-        - "*"
+      - xxxxxx.oauthd.com
       port:
         name: http-9080
         number: 80
@@ -21,23 +21,11 @@ metadata:
   namespace: default
 spec:
   gateways:
-    - mesh-gateway
     - mesh-gateway.mesh-system.svc.cluster.local
   hosts:
-#    - xxxxxx-default.oauthd.com
-#    - xxxxxx
-     - "*"
+    - xxxxxx.oauthd.com
   http:
-    - match:
-        - gateways:
-            - mesh-gateway
-            - mesh-gateway.mesh-system.svc.cluster.local
-          port: 80
-        - gateways:
-            - mesh-gateway
-            - mesh-gateway.mesh-system.svc.cluster.local
-          port: 443
-      route:
+    - route:
         - destination:
             host: xxxxxx.default.svc.cluster.local
             port:
@@ -49,7 +37,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: xxxxxx
-  namespace: default
+  namespace: mesh-system
 spec:
   host: xxxxxx.default.svc.cluster.local
   subsets:

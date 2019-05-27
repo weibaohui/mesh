@@ -1,0 +1,40 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: whoami-v3
+  namespace: default
+spec:
+  gateways:
+    - mesh-gateway.mesh-system.svc.cluster.local
+  hosts:
+    - whoami.oauthd.com
+  http:
+    - match:
+        - gateways:
+            - mesh
+            - mesh-gateway.mesh-system.svc.cluster.local
+          port: 80
+        - gateways:
+            - mesh
+            - mesh-gateway.mesh-system.svc.cluster.local
+          port: 443
+      route:
+        - destination:
+            host: whoami.default.svc.cluster.local
+            port:
+              number: 80
+            subset: v3
+          weight: 100
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: whoami
+  namespace: default
+spec:
+  host: whoami.default.svc.cluster.local
+  subsets:
+    - labels:
+        version: v3
+      name: v3

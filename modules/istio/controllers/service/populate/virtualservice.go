@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	privateGw           = "mesh-gateway"
+	privateGw           = "mesh"
 	MeshNameHeader      = "X-Mesh-ServiceName"
 	MeshNamespaceHeader = "X-Mesh-Namespace"
 	MeshPortHeader      = "X-Mesh-ServicePort"
@@ -174,13 +174,15 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, names
 		return nil
 	}
 	//
-	// if clusterDomain.Status.ClusterDomain == "" {
-	// 	external = false
-	// }
+	//if clusterDomain.Status.ClusterDomain == "" {
+	//external = false
+	//}
 
 	vs := newVirtualService(name, namespace)
+
+	//todo 1.1.7版本中绑定了gw 后，有问题，暂时先把vs跟gw解绑
 	spec := v1alpha3.VirtualServiceSpec{
-		Gateways: []string{privateGw},
+		Gateways: []string{},
 		HTTP:     routes,
 	}
 	if aggregated {
@@ -202,6 +204,8 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, names
 		spec.Hosts = append(spec.Hosts, externalHost)
 	}
 
+	//todo 1.1.7版本中绑定了gw 后，有问题，暂时先把vs跟gw解绑
+	spec.Hosts = []string{"*"}
 	vs.Spec = spec
 	return vs
 }

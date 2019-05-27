@@ -45,18 +45,6 @@ func serviceSelector(service *riov1.Service, systemNamespace string, os *objects
 	}
 	os.Add(svc)
 }
-func serviceSelector2(service *riov1.Service, systemNamespace string, os *objectset.ObjectSet) {
-	labels := servicelabels.ServiceLabels(service)
-	labels = servicelabels.Merge(labels, map[string]string{
-		"test": "test",
-		"x":    "x",
-	})
-	selectorLabels := servicelabels.SelectorLabels(service)
-	app, version := services.AppAndVersion(service)
-	svc := newServiceSelector(app+"-"+version+"test", service.Namespace, v1.ServiceTypeNodePort, labels, selectorLabels)
-
-	os.Add(svc)
-}
 
 func isGateway(service *riov1.Service, systemNamespace string) bool {
 	return service.Name == constants.IstioGateway && service.Namespace == systemNamespace

@@ -3,7 +3,11 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/knative/pkg/apis/istio/v1alpha3"
+	"github.com/weibaohui/mesh/pkg/constructors"
 	"sort"
+	"strconv"
+	"strings"
 
 	corev1controller "github.com/rancher/wrangler-api/pkg/generated/controllers/core/v1"
 	"github.com/rancher/wrangler/pkg/objectset"
@@ -19,6 +23,15 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
+var (
+	supportedProtocol = []v1alpha3.PortProtocol{
+		v1alpha3.ProtocolHTTP,
+		//v1alpha3.ProtocolTCP,
+		//v1alpha3.ProtocolGRPC,
+		//v1alpha3.ProtocolHTTP2,
+	}
+)
+
 func Register(ctx context.Context, rContext *types.Context) error {
 	fmt.Println("Register app-route-gw ")
 
@@ -28,6 +41,7 @@ func Register(ctx context.Context, rContext *types.Context) error {
 			rContext.Mesh.Mesh().V1().App(),
 			rContext.Networking.Networking().V1alpha3().DestinationRule(),
 			rContext.Networking.Networking().V1alpha3().VirtualService(),
+			rContext.Networking.Networking().V1alpha3().Gateway(),
 			rContext.Extensions.Extensions().V1beta1().Ingress()).WithRateLimiting(10)
 
 	sh := &serviceHandler{
@@ -89,17 +103,29 @@ func (s serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace
 		return nil
 	}
 
+	domain := app.Name + "." + app.Namespace + ".oauthd.com"
+	gwName := app.Name + "-" + app.Namespace + "-gateway"
+
+	//域名gateway
+	Gateway(app.Namespace, domain, gwName, os)
+
+	//流量拆分vs
+
 	var dests []populate.Dest
-	for version, rev := range app.Status.RevisionWeight {
+	for _, r := range app.Spec.Revisions {
 		dests = append(dests, populate.Dest{
 			Host:   app.Name,
-			Subset: version,
-			Weight: rev.Weight,
+			Subset: r.Version,
+			Weight: r.Weight,
 		})
 	}
 	sort.Slice(dests, func(i, j int) bool {
 		return dests[i].Subset < dests[j].Subset
 	})
+
+	revVs := populate.VirtualServiceFromSpecUnion(s.systemNamespace,app.Name,domain,gwName,dests...)
+
+
 
 	var revision *meshv1.Service
 	for i := len(app.Spec.Revisions) - 1; i >= 0; i-- {
@@ -109,16 +135,47 @@ func (s serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace
 		} else if errors.IsNotFound(err) {
 			continue
 		}
-		break
-	}
-	if revision == nil {
-		return nil
+		if revision == nil {
+			return nil
+		}
+
+		deepcopy := revision.DeepCopy()
+		deepcopy.Status.PublicDomains = app.Status.PublicDomains
+		revVs := populate.VirtualServiceFromSpec(false, s.systemNamespace, app.Name, app.Namespace, clusterDomain, deepcopy, dests...)
+		os.Add(revVs)
+
 	}
 
-	deepcopy := revision.DeepCopy()
-	deepcopy.Status.PublicDomains = app.Status.PublicDomains
-	revVs := populate.VirtualServiceFromSpec(true, s.systemNamespace, app.Name, app.Namespace, clusterDomain, deepcopy, dests...)
-	os.Add(revVs)
+
 
 	return nil
+}
+
+
+
+func Gateway(systemNamespace string, clusterDomain, gwName string, output *objectset.ObjectSet) {
+	// Istio Gateway
+	gws := v1alpha3.GatewaySpec{
+		Selector: map[string]string{
+			"istio": constants.IstioGateway,
+		},
+	}
+
+	httpPort, _ := strconv.ParseInt(constants.DefaultHTTPOpenPort, 10, 0)
+	if clusterDomain != "" {
+		gws.Servers = append(gws.Servers, v1alpha3.Server{
+			Port: v1alpha3.Port{
+				Protocol: v1alpha3.ProtocolHTTP,
+				Number:   int(httpPort),
+				Name:     fmt.Sprintf("%v-%v", strings.ToLower(string(v1alpha3.ProtocolHTTP)), httpPort),
+			},
+			Hosts: []string{clusterDomain,"*."+clusterDomain},
+		})
+	}
+
+	gateway := constructors.NewGateway(systemNamespace, gwName, v1alpha3.Gateway{
+		Spec: gws,
+	})
+
+	output.Add(gateway)
 }

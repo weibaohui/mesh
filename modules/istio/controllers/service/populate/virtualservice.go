@@ -2,19 +2,17 @@ package populate
 
 import (
 	"fmt"
+	"github.com/knative/pkg/apis/istio/v1alpha3"
+	"github.com/rancher/wrangler/pkg/objectset"
+	"github.com/weibaohui/mesh/modules/istio/pkg/domains"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/constructors"
 	"github.com/weibaohui/mesh/pkg/services"
 	"github.com/weibaohui/mesh/pkg/serviceset"
-	"strconv"
-	"strings"
-
-	"github.com/knative/pkg/apis/istio/v1alpha3"
-	"github.com/rancher/wrangler/pkg/objectset"
-	"github.com/weibaohui/mesh/modules/istio/pkg/domains"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"strconv"
 )
 
 const (
@@ -26,38 +24,9 @@ const (
 
 func virtualServices(namespace string, clusterDomain *v1.ClusterDomain, service *v1.Service, os *objectset.ObjectSet) error {
 	os.Add(virtualServiceFromService(namespace, clusterDomain, service)...)
-	os.Add(gateWay(namespace, clusterDomain, service)...)
-	return nil
+ 	return nil
 }
 
-// 给vs 创建匹配的gw
-func gateWay(systemNamespace string, clusterDomain *v1.ClusterDomain, service *v1.Service) []runtime.Object {
-	var result []runtime.Object
-
-	// Istio Gateway
-	gws := v1alpha3.GatewaySpec{
-		Selector: map[string]string{
-			"istio": constants.IstioGateway,
-		},
-	}
-	httpPort, _ := strconv.ParseInt(constants.DefaultHTTPOpenPort, 10, 0)
-	externalHost := domains.GetExternalDomainDot(service.Name, service.Namespace, "oauthd.com")
-	gws.Servers = append(gws.Servers, v1alpha3.Server{
-		Port: v1alpha3.Port{
-			Protocol: v1alpha3.ProtocolHTTP,
-			Number:   int(httpPort),
-			Name:     fmt.Sprintf("%v-%v", strings.ToLower(string(v1alpha3.ProtocolHTTP)), httpPort),
-		},
-		Hosts: []string{externalHost},
-	})
-
-	gateway := constructors.NewGateway(service.Namespace, service.Name+"-gateway", v1alpha3.Gateway{
-		Spec: gws,
-	})
-
-	result = append(result, gateway)
-	return result
-}
 
 func httpRoutes(systemNamespace string, service *v1.Service, dests []Dest) ([]v1alpha3.HTTPRoute, bool) {
 	external := false
@@ -197,6 +166,29 @@ func virtualServiceFromService(namespace string, clusterDomain *v1.ClusterDomain
 	}
 
 	return result
+}
+
+func VirtualServiceFromSpecUnion(systemNamespace,appName,domain,gwName string,service *v1.Service,dests ...Dest)  *v1alpha3.VirtualService{
+	routes, _ := httpRoutes(systemNamespace, service, dests)
+	if len(routes) == 0 {
+		return nil
+	}
+	//
+	//if clusterDomain.Status.ClusterDomain == "" {
+	//external = false
+	//}
+
+	vs := newVirtualService(appName, systemNamespace)
+
+	spec := v1alpha3.VirtualServiceSpec{
+		Gateways: []string{privateGw},
+		HTTP:     routes,
+	}
+	spec.Gateways = append(spec.Gateways, gwName,)
+	spec.Hosts = append(spec.Hosts, domain)
+
+	vs.Spec = spec
+	return vs
 }
 
 func VirtualServiceFromSpec(aggregated bool, systemNamespace string, nameWithVersion, namespace string, clusterDomain *v1.ClusterDomain, service *v1.Service, dests ...Dest) *v1alpha3.VirtualService {

@@ -1,0 +1,15 @@
+apiVersion: mesh.oauthd.com/v1
+kind: App
+metadata:
+  name: whoami
+  namespace: default
+spec:
+  revisions:
+    - public: true
+      serviceName: whoami-v2
+      Version: v2
+      weight: 100
+    - public: true
+      serviceName: whoami-v3
+      Version: v3
+      weight: 0

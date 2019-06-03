@@ -199,7 +199,7 @@ func virtualServiceFromService(namespace string, clusterDomain *v1.ClusterDomain
 	return result
 }
 
-func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, namespace string, clusterDomain *v1.ClusterDomain, service *v1.Service, dests ...Dest) *v1alpha3.VirtualService {
+func VirtualServiceFromSpec(aggregated bool, systemNamespace string, nameWithVersion, namespace string, clusterDomain *v1.ClusterDomain, service *v1.Service, dests ...Dest) *v1alpha3.VirtualService {
 	routes, external := httpRoutes(systemNamespace, service, dests)
 	if len(routes) == 0 {
 		return nil
@@ -209,14 +209,14 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, names
 	//external = false
 	//}
 
-	vs := newVirtualService(name, namespace)
+	vs := newVirtualService(nameWithVersion, namespace)
 
 	spec := v1alpha3.VirtualServiceSpec{
 		Gateways: []string{privateGw},
 		HTTP:     routes,
 	}
 	if aggregated {
-		spec.Hosts = []string{name}
+		spec.Hosts = []string{nameWithVersion}
 	}
 
 	for _, publicDomain := range service.Status.PublicDomains {
@@ -233,7 +233,7 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, name, names
 		//加入vs自己关联的gateway
 		spec.Gateways = append(spec.Gateways, service.Name+"-gateway",)
 
-		externalHost := domains.GetExternalDomainDot(service.Name, service.Namespace, "oauthd.com")
+		externalHost := domains.GetExternalDomainDot(nameWithVersion, service.Namespace, "oauthd.com")
 		spec.Hosts = append(spec.Hosts, externalHost)
 	}
 

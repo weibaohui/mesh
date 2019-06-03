@@ -1,0 +1,64 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: whoami
+    version: v3
+  name: whoami-v3
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: whoami
+      version: v3
+  template:
+    metadata:
+      labels:
+        app: whoami
+        version: v3
+    spec:
+      containers:
+        - image: jwilder/whoami
+          name: whoami-v3
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: whoami
+    version: v2
+  name: whoami-v2
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: whoami
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: whoami
+        version: v2
+    spec:
+      containers:
+        - image: jwilder/whoami
+          name: whoami-v2
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami
+spec:
+  selector:
+    app: whoami
+  ports:
+    - port: 8000
+      name: http-8000
+      targetPort: 8000
+  type: ClusterIP

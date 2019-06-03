@@ -46,6 +46,7 @@ func Register(ctx context.Context, rContext *types.Context) error {
 
 	sh := &serviceHandler{
 		systemNamespace:    rContext.Namespace,
+		deployCache:        rContext.Apps.Apps().V1().Deployment().Cache(),
 		appCache:           rContext.Mesh.Mesh().V1().App().Cache(),
 		serviceCache:       rContext.Mesh.Mesh().V1().Service().Cache(),
 		secretCache:        rContext.Core.Core().V1().Secret().Cache(),
@@ -59,6 +60,7 @@ func Register(ctx context.Context, rContext *types.Context) error {
 
 type serviceHandler struct {
 	systemNamespace    string
+	deployCache        corev1controller.NodeCache //todo fix
 	appCache           v1.AppCache
 	serviceCache       v1.ServiceCache
 	secretCache        corev1controller.SecretCache
@@ -123,9 +125,7 @@ func (s serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace
 		return dests[i].Subset < dests[j].Subset
 	})
 
-	revVs := populate.VirtualServiceFromSpecUnion(s.systemNamespace,app.Name,domain,gwName,dests...)
-
-
+	revVs := populate.VirtualServiceFromSpecUnion(s.systemNamespace, app.Name, domain, gwName, dests...)
 
 	var revision *meshv1.Service
 	for i := len(app.Spec.Revisions) - 1; i >= 0; i-- {
@@ -146,12 +146,8 @@ func (s serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace
 
 	}
 
-
-
 	return nil
 }
-
-
 
 func Gateway(systemNamespace string, clusterDomain, gwName string, output *objectset.ObjectSet) {
 	// Istio Gateway
@@ -169,7 +165,7 @@ func Gateway(systemNamespace string, clusterDomain, gwName string, output *objec
 				Number:   int(httpPort),
 				Name:     fmt.Sprintf("%v-%v", strings.ToLower(string(v1alpha3.ProtocolHTTP)), httpPort),
 			},
-			Hosts: []string{clusterDomain,"*."+clusterDomain},
+			Hosts: []string{clusterDomain, "*." + clusterDomain},
 		})
 	}
 

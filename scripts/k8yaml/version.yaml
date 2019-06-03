@@ -62,7 +62,6 @@ spec:
       name: http-8000
       targetPort: 8000
   type: ClusterIP
-
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
@@ -98,14 +97,13 @@ spec:
             port:
               number: 8000
             subset: v3
-          weight: 0
-    - route:
+          weight: 50
         - destination:
             host: whoami.default.svc.cluster.local
             port:
               number: 8000
             subset: v2
-          weight: 100
+          weight: 50
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule

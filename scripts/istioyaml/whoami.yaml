@@ -11,7 +11,7 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - "whoami.oauthd.com"
+        - "whoami.default.oauthd.com"
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -22,7 +22,7 @@ spec:
   gateways:
     - whoami-gateway
   hosts:
-    - whoami.oauthd.com
+    - whoami.default.oauthd.com
   http:
     - match:
         - gateways:

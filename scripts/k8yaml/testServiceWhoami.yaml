@@ -1,18 +1,31 @@
 apiVersion: mesh.oauthd.com/v1
 kind: Service
 metadata:
-  name: whoami
+  name: whoami-v3
   namespace: default
 spec:
   version: v3
-  concurrency: 32
   cpus: "1"
   image: jwilder/whoami
   imagePullPolicy: IfNotPresent
-  maxScale: 1
-  minScale: 1
   ports:
     - port: 8000
       protocol: HTTP
       targetPort: 8000
-  weight: 100
+  weight: 50
+---
+apiVersion: mesh.oauthd.com/v1
+kind: Service
+metadata:
+  name: whoami-v2
+  namespace: default
+spec:
+  version: v2
+  image: nginx:alpine
+  imagePullPolicy: IfNotPresent
+  ports:
+    - port: 80
+      protocol: HTTP
+      targetPort: 80
+  weight: 50
+---

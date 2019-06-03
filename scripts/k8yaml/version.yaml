@@ -74,6 +74,8 @@ spec:
   servers:
     - hosts:
         - whoami.default.oauthd.com
+        - whoami-v2.default.oauthd.com
+        - whoami-v3.default.oauthd.com
       port:
         name: http-8000
         number: 80
@@ -119,3 +121,43 @@ spec:
     - labels:
         version: v2
       name: v2
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: whoami-v2
+  namespace: default
+spec:
+  gateways:
+    - mesh
+    - whoami-gateway
+  hosts:
+    - whoami-v2.default.oauthd.com
+  http:
+    - route:
+        - destination:
+            host: whoami.default.svc.cluster.local
+            port:
+              number: 8000
+            subset: v2
+          weight: 100
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: whoami-v3
+  namespace: default
+spec:
+  gateways:
+    - mesh
+    - whoami-gateway
+  hosts:
+    - whoami-v3.default.oauthd.com
+  http:
+    - route:
+        - destination:
+            host: whoami.default.svc.cluster.local
+            port:
+              number: 8000
+            subset: v3
+          weight: 100

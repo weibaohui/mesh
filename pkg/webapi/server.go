@@ -89,7 +89,7 @@ func ports(req *restful.Request, resp *restful.Response) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(appRet.CreationTimestamp)
+
 
 	resp.WriteEntity("ok")
 }

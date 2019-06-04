@@ -72,14 +72,6 @@ func (s serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace
 		return nil
 	}
 
-	fmt.Println(app.Name)
-	fmt.Println(len(app.Spec.Revisions))
-	for _, v := range app.Spec.Revisions {
-		fmt.Println(v.ServiceName)
-		fmt.Println(v.Version)
-		fmt.Println(v.Weight)
-	}
-
 	if len(app.Spec.Revisions) == 0 {
 		return nil
 	}

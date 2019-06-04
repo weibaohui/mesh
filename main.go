@@ -12,6 +12,7 @@ import (
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/server"
 	"github.com/weibaohui/mesh/pkg/version"
+	"github.com/weibaohui/mesh/pkg/webapi"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -114,6 +115,8 @@ func run(c *cli.Context) error {
 	}
 
 	ctx := signals.SetupSignalHandler(context.Background())
+
+	go webapi.Start()
 	if err := server.Startup(ctx, namespace, kubeconfig); err != nil {
 		return err
 	}

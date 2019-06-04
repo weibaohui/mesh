@@ -68,6 +68,7 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 		return err
 	}
 
+	
 	ctx, meshContext := types.BuildContext(ctx, systemNamespace, restConfig)
 
 	namespaceClient := meshContext.Core.Core().V1().Namespace()

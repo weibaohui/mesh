@@ -68,7 +68,7 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 		return err
 	}
 
-	
+	//todo 保存下来，共享
 	ctx, meshContext := types.BuildContext(ctx, systemNamespace, restConfig)
 
 	namespaceClient := meshContext.Core.Core().V1().Namespace()

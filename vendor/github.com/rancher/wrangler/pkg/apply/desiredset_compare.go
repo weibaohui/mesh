@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	LabelApplied = "objectset.rio.cattle.io/applied"
+	LabelApplied = "objectset.mesh.oauthd.com/applied"
 )
 
 var (

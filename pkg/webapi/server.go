@@ -35,10 +35,7 @@ func ports(req *restful.Request, resp *restful.Response) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(string(bytes))
-	instances := []instanceWeight{
-
-	}
+	var instances []instanceWeight
 
 	//bytes, err = json.Marshal(instances)
 	//fmt.Println(string(bytes))
@@ -47,7 +44,6 @@ func ports(req *restful.Request, resp *restful.Response) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println(instances)
 
 	app := v1.App{
 
@@ -87,7 +83,6 @@ func ports(req *restful.Request, resp *restful.Response) {
 		fmt.Println(err.Error())
 	}
 
-	fmt.Println(app.Spec.Revisions)
 	obj.Spec = app.Spec
 
 	appRet, err := controller.Update(obj)

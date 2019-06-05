@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 
 	"log"
 	"net/http"
@@ -28,9 +29,9 @@ func Start() {
 
 func tt(request *restful.Request, response *restful.Response) {
 	mCtx := server.GlobalContext()
-	requirement, err := labels.NewRequirement("name", "!=", []string{"x"})
+	requirement, err := labels.NewRequirement("name", selection.NotIn, []string{"x"})
 	selector := labels.NewSelector().Add(*requirement)
-	list, err := mCtx.Apps.Apps().V1().Deployment().Cache().List("default",selector)
+	list, err := mCtx.Apps.Apps().V1().Deployment().Cache().List("default", selector)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

@@ -17,9 +17,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-var Crds = append(crd.NonNamespacedTypes(
-	"ClusterBuildTemplate.build.knative.dev/v1alpha1",
-), crd.NamespacedTypes(
+var Crds = append(crd.NonNamespacedTypes(), crd.NamespacedTypes(
 	"BuildTemplate.build.knative.dev/v1alpha1",
 	"Image.caching.internal.knative.dev/v1alpha1",
 
@@ -57,7 +55,14 @@ var Crds = append(crd.NonNamespacedTypes(
 	"template.config.istio.io/v1alpha2",
 
 )...)
+var globalContext *types.Context
 
+func GlobalContext() *types.Context {
+	if globalContext == nil {
+		return nil
+	}
+	return globalContext
+}
 func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 	restConfig, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
 	if err != nil {
@@ -68,8 +73,9 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 		return err
 	}
 
-	//todo 保存下来，共享
+	// todo 保存下来，共享
 	ctx, meshContext := types.BuildContext(ctx, systemNamespace, restConfig)
+	globalContext = meshContext
 
 	namespaceClient := meshContext.Core.Core().V1().Namespace()
 	if _, err := namespaceClient.Get(systemNamespace, metav1.GetOptions{}); err != nil {

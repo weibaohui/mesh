@@ -1,7 +1,8 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: whoami-gateway
+  name: prometheus-gateway
+  namespace: istio-system
 spec:
   selector:
     istio: ingressgateway # use Istio default gateway implementation
@@ -11,45 +12,41 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - whoami.default.oauthd.com
+        - prometheus.istio.oauthd.com
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: whoami
-  namespace: default
+  name: prometheus-vs
+  namespace: istio-system
 spec:
   gateways:
-    - whoami-gateway
+    - prometheus-gateway
   hosts:
-    - whoami.default.oauthd.com
+    - prometheus.istio.oauthd.com
   http:
     - match:
         - gateways:
             - mesh
-            - whoami-gateway
+            - prometheus-gateway
           port: 80
-        - gateways:
-            - mesh
-            - whoami-gateway
-          port: 443
       route:
         - destination:
-            host: whoami.default.svc.cluster.local
+            host: prometheus.istio-system.svc.cluster.local
             port:
-              number: 8000
-            subset: v3
+              number: 9090
+            subset: v1
           weight: 100
 
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: whoami
-  namespace: default
+  name: prometheus-dr
+  namespace: istio-system
 spec:
-  host: whoami.default.svc.cluster.local
+  host: prometheus.istio-system.svc.cluster.local
   subsets:
     - labels:
-        version: v3
-      name: v3
+        app: prometheus
+      name: v1

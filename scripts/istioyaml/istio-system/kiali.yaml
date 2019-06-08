@@ -1,0 +1,75 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kiali-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - kiali.istio.oauthd.com
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali-vs
+  namespace: istio-system
+spec:
+  gateways:
+    - kiali-gateway
+  hosts:
+    - kiali.istio.oauthd.com
+  http:
+    - match:
+        - gateways:
+            - mesh
+            - kiali-gateway
+          port: 80
+      route:
+        - destination:
+            host: kiali.istio-system.svc.cluster.local
+            port:
+              number: 20001
+            subset: v1
+          weight: 100
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: kiali-dr
+  namespace: istio-system
+spec:
+  host: kiali.istio-system.svc.cluster.local
+  subsets:
+    - labels:
+        app: kiali
+      name: v1
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    istio_namespace: istio-system
+    server:
+      port: 20001
+    external_services:
+      istio:
+        url_service_version: http://istio-pilot:8080/version
+      jaeger:
+        url: http://trace.istio.oauthd.com/jaeger/search
+      grafana:
+        url: http://grafana.istio.oauthd.com
+kind: ConfigMap
+metadata:
+  labels:
+    app: kiali
+    chart: kiali
+    heritage: Tiller
+    release: istio
+  name: kiali
+  namespace: istio-system

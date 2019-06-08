@@ -1,7 +1,8 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: whoami-gateway
+  name: zipkin-gateway
+  namespace: istio-system
 spec:
   selector:
     istio: ingressgateway # use Istio default gateway implementation
@@ -11,45 +12,41 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - whoami.default.oauthd.com
+        - zipkin.istio.oauthd.com
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: whoami
-  namespace: default
+  name: zipkin-vs
+  namespace: istio-system
 spec:
   gateways:
-    - whoami-gateway
+    - zipkin-gateway
   hosts:
-    - whoami.default.oauthd.com
+    - zipkin.istio.oauthd.com
   http:
     - match:
         - gateways:
             - mesh
-            - whoami-gateway
+            - zipkin-gateway
           port: 80
-        - gateways:
-            - mesh
-            - whoami-gateway
-          port: 443
       route:
         - destination:
-            host: whoami.default.svc.cluster.local
+            host: istio-ingressgateway.istio-system.svc.cluster.local
             port:
-              number: 8000
-            subset: v3
+              number: 15032
+            subset: v1
           weight: 100
 
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: whoami
-  namespace: default
+  name: zipkin-dr
+  namespace: istio-system
 spec:
-  host: whoami.default.svc.cluster.local
+  host: istio-ingressgateway.istio-system.svc.cluster.local
   subsets:
     - labels:
-        version: v3
-      name: v3
+        app: istio-ingressgateway
+      name: v1

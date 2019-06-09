@@ -42,8 +42,6 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&ClusterDomainList{},
 		&ExternalService{},
 		&ExternalServiceList{},
-		&Feature{},
-		&FeatureList{},
 		&Router{},
 		&RouterList{},
 		&Service{},

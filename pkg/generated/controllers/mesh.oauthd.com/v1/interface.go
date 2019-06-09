@@ -17,7 +17,6 @@ type Interface interface {
 	App() AppController
 	ClusterDomain() ClusterDomainController
 	ExternalService() ExternalServiceController
-	Feature() FeatureController
 	Router() RouterController
 	Service() ServiceController
 }
@@ -45,9 +44,6 @@ func (c *version) ClusterDomain() ClusterDomainController {
 }
 func (c *version) ExternalService() ExternalServiceController {
 	return NewExternalServiceController(v1.SchemeGroupVersion.WithKind("ExternalService"), c.controllerManager, c.client, c.informers.ExternalServices())
-}
-func (c *version) Feature() FeatureController {
-	return NewFeatureController(v1.SchemeGroupVersion.WithKind("Feature"), c.controllerManager, c.client, c.informers.Features())
 }
 func (c *version) Router() RouterController {
 	return NewRouterController(v1.SchemeGroupVersion.WithKind("Router"), c.controllerManager, c.client, c.informers.Routers())

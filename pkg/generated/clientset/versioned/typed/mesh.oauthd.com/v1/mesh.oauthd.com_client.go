@@ -18,7 +18,6 @@ type MeshV1Interface interface {
 	AppsGetter
 	ClusterDomainsGetter
 	ExternalServicesGetter
-	FeaturesGetter
 	RoutersGetter
 	ServicesGetter
 }
@@ -38,10 +37,6 @@ func (c *MeshV1Client) ClusterDomains(namespace string) ClusterDomainInterface {
 
 func (c *MeshV1Client) ExternalServices(namespace string) ExternalServiceInterface {
 	return newExternalServices(c, namespace)
-}
-
-func (c *MeshV1Client) Features(namespace string) FeatureInterface {
-	return newFeatures(c, namespace)
 }
 
 func (c *MeshV1Client) Routers(namespace string) RouterInterface {

@@ -20,7 +20,6 @@ func main() {
 					meshv1.ExternalService{},
 					meshv1.Router{},
 					meshv1.App{},
-					meshv1.Feature{},
 					meshv1.Service{},
 					meshv1.ClusterDomain{},
 				},

@@ -47,8 +47,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().ClusterDomains().Informer()}, nil
 	case v1.SchemeGroupVersion.WithResource("externalservices"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().ExternalServices().Informer()}, nil
-	case v1.SchemeGroupVersion.WithResource("features"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().Features().Informer()}, nil
 	case v1.SchemeGroupVersion.WithResource("routers"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().Routers().Informer()}, nil
 	case v1.SchemeGroupVersion.WithResource("services"):

@@ -18,8 +18,6 @@ type Interface interface {
 	ClusterDomains() ClusterDomainInformer
 	// ExternalServices returns a ExternalServiceInformer.
 	ExternalServices() ExternalServiceInformer
-	// Features returns a FeatureInformer.
-	Features() FeatureInformer
 	// Routers returns a RouterInformer.
 	Routers() RouterInformer
 	// Services returns a ServiceInformer.
@@ -50,11 +48,6 @@ func (v *version) ClusterDomains() ClusterDomainInformer {
 // ExternalServices returns a ExternalServiceInformer.
 func (v *version) ExternalServices() ExternalServiceInformer {
 	return &externalServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// Features returns a FeatureInformer.
-func (v *version) Features() FeatureInformer {
-	return &featureInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Routers returns a RouterInformer.

@@ -30,14 +30,6 @@ type ExternalServiceListerExpansion interface{}
 // ExternalServiceNamespaceLister.
 type ExternalServiceNamespaceListerExpansion interface{}
 
-// FeatureListerExpansion allows custom methods to be added to
-// FeatureLister.
-type FeatureListerExpansion interface{}
-
-// FeatureNamespaceListerExpansion allows custom methods to be added to
-// FeatureNamespaceLister.
-type FeatureNamespaceListerExpansion interface{}
-
 // RouterListerExpansion allows custom methods to be added to
 // RouterLister.
 type RouterListerExpansion interface{}

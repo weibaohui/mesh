@@ -28,10 +28,6 @@ func (c *FakeMeshV1) ExternalServices(namespace string) v1.ExternalServiceInterf
 	return &FakeExternalServices{c, namespace}
 }
 
-func (c *FakeMeshV1) Features(namespace string) v1.FeatureInterface {
-	return &FakeFeatures{c, namespace}
-}
-
 func (c *FakeMeshV1) Routers(namespace string) v1.RouterInterface {
 	return &FakeRouters{c, namespace}
 }

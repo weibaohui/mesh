@@ -2,7 +2,6 @@ package stackobject
 
 import (
 	"context"
-	"fmt"
 	"github.com/rancher/mapper/convert"
 	"github.com/rancher/wrangler/pkg/condition"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"

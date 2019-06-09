@@ -2,10 +2,18 @@ package istio
 
 import (
 	"context"
-	"github.com/weibaohui/mesh/modules/istio/features/routing"
+	"github.com/weibaohui/mesh/modules/istio/controllers/app"
+	"github.com/weibaohui/mesh/pkg/feature"
 	"github.com/weibaohui/mesh/types"
 )
 
 func Register(ctx context.Context, mContext *types.Context) error {
-	return routing.Register(ctx, mContext)
+	f := &feature.FeatureController{
+		FeatureName: "Istio-stack",
+		Controllers: []feature.ControllerRegister{
+			app.Register,
+		},
+	}
+
+	return f.Register(ctx, mContext)
 }

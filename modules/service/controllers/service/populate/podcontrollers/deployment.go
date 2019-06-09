@@ -2,13 +2,13 @@ package podcontrollers
 
 import (
 	"github.com/rancher/wrangler/pkg/objectset"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func deployment(service *riov1.Service, cp *controllerParams, os *objectset.ObjectSet) {
+func deployment(service *meshv1.Service, cp *controllerParams, os *objectset.ObjectSet) {
 	dep := constructors.NewDeployment(service.Namespace, service.Name, appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels:      cp.Labels,
@@ -40,7 +40,7 @@ func deployment(service *riov1.Service, cp *controllerParams, os *objectset.Obje
 	os.Add(dep)
 }
 
-func daemonset(service *riov1.Service, cp *controllerParams, os *objectset.ObjectSet) {
+func daemonset(service *meshv1.Service, cp *controllerParams, os *objectset.ObjectSet) {
 	ds := constructors.NewDaemonset(service.Namespace, service.Name, appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels:      cp.Labels,

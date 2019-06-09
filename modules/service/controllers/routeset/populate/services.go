@@ -2,14 +2,14 @@ package populate
 
 import (
 	"github.com/rancher/wrangler/pkg/objectset"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-func ServiceForRouteSet(r *riov1.Router, os *objectset.ObjectSet) error {
+func ServiceForRouteSet(r *meshv1.Router, os *objectset.ObjectSet) error {
 	service := constructors.NewService(r.Namespace, r.Name,
 		v1.Service{
 			ObjectMeta: metav1.ObjectMeta{

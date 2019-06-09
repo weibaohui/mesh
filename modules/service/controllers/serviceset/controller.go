@@ -9,9 +9,9 @@ import (
 	"github.com/rancher/wrangler/pkg/apply"
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/serviceports"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
-	riov1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
+	meshv1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	services2 "github.com/weibaohui/mesh/pkg/services"
 	"github.com/weibaohui/mesh/pkg/serviceset"
 	"github.com/weibaohui/mesh/types"
@@ -41,13 +41,13 @@ type handler struct {
 	namespace      string
 	apply          apply.Apply
 	coreservice    corev1controller.ServiceController
-	services       riov1controller.ServiceController
-	apps           riov1controller.AppController
-	serviceCache   riov1controller.ServiceCache
+	services       meshv1controller.ServiceController
+	apps           meshv1controller.AppController
+	serviceCache   meshv1controller.ServiceCache
 	namespaceCache v1.NamespaceCache
 }
 
-func (h *handler) onChange(key string, service *riov1.Service) (*riov1.Service, error) {
+func (h *handler) onChange(key string, service *meshv1.Service) (*meshv1.Service, error) {
 	os := objectset.NewObjectSet()
 	if service == nil {
 		return service, nil
@@ -83,17 +83,17 @@ func (h *handler) onChange(key string, service *riov1.Service) (*riov1.Service, 
 	os.Add(svc)
 
 	// ServiceSet
-	app := riov1.NewApp(service.Namespace, appName, riov1.App{
-		Spec: riov1.AppSpec{
-			Revisions: make([]riov1.Revision, 0),
+	app := meshv1.NewApp(service.Namespace, appName, meshv1.App{
+		Spec: meshv1.AppSpec{
+			Revisions: make([]meshv1.Revision, 0),
 		},
-		Status: riov1.AppStatus{
-			RevisionWeight: make(map[string]riov1.ServiceObservedWeight, 0),
+		Status: meshv1.AppStatus{
+			RevisionWeight: make(map[string]meshv1.ServiceObservedWeight, 0),
 		},
 	})
 
 	var totalweight int
-	var serviceWeight []riov1.Revision
+	var serviceWeight []meshv1.Revision
 	for _, service := range filteredServices.Revisions {
 		if service.DeletionTimestamp != nil {
 			continue
@@ -119,14 +119,14 @@ func (h *handler) onChange(key string, service *riov1.Service) (*riov1.Service, 
 
 		// hack for daemonsets
 		if scaleStatus == nil && service.SystemSpec != nil && service.SystemSpec.Global {
-			scaleStatus = &riov1.ScaleStatus{
+			scaleStatus = &meshv1.ScaleStatus{
 				Available: scale,
 				Ready:     scale,
 			}
 			weight = 100
 		}
 
-		serviceWeight = append(serviceWeight, riov1.Revision{
+		serviceWeight = append(serviceWeight, meshv1.Revision{
 			Public:          public,
 			Weight:          weight,
 			ServiceName:     service.Name,
@@ -175,7 +175,7 @@ func IsReady(status *appv1.DeploymentStatus) bool {
 	return false
 }
 
-func createService(namespace, app string, serviceSet []*riov1.Service) *v12.Service {
+func createService(namespace, app string, serviceSet []*meshv1.Service) *v12.Service {
 	ports := portsForService(serviceSet)
 	return constructors.NewService(namespace, app, v12.Service{
 		Spec: v12.ServiceSpec{
@@ -188,7 +188,7 @@ func createService(namespace, app string, serviceSet []*riov1.Service) *v12.Serv
 	})
 }
 
-func portsForService(serviceSet []*riov1.Service) (result []v12.ServicePort) {
+func portsForService(serviceSet []*meshv1.Service) (result []v12.ServicePort) {
 	ports := map[struct {
 		Port     int32
 		Protocol v12.Protocol

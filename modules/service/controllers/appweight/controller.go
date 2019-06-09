@@ -6,8 +6,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
-	riov1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -18,17 +18,17 @@ func Register(ctx context.Context, mContext *types.Context) error {
 		apps:     mContext.Mesh.Mesh().V1().App(),
 	}
 
-	updator := riov1controller.UpdateAppOnChange(mContext.Mesh.Mesh().V1().App().Updater(), sh.sync)
+	updator := meshv1controller.UpdateAppOnChange(mContext.Mesh.Mesh().V1().App().Updater(), sh.sync)
 	mContext.Mesh.Mesh().V1().App().OnChange(ctx, "app-weight", updator)
 	return nil
 }
 
 type appWeightHandler struct {
-	services riov1controller.ServiceController
-	apps     riov1controller.AppController
+	services meshv1controller.ServiceController
+	apps     meshv1controller.AppController
 }
 
-func (s appWeightHandler) sync(key string, obj *riov1.App) (*riov1.App, error) {
+func (s appWeightHandler) sync(key string, obj *meshv1.App) (*meshv1.App, error) {
 	if obj == nil {
 		return nil, nil
 	}
@@ -36,7 +36,7 @@ func (s appWeightHandler) sync(key string, obj *riov1.App) (*riov1.App, error) {
 	app := obj.DeepCopy()
 
 	if app.Status.RevisionWeight == nil {
-		app.Status.RevisionWeight = make(map[string]riov1.ServiceObservedWeight, 0)
+		app.Status.RevisionWeight = make(map[string]meshv1.ServiceObservedWeight, 0)
 	}
 
 	// set initial weight status
@@ -45,14 +45,14 @@ func (s appWeightHandler) sync(key string, obj *riov1.App) (*riov1.App, error) {
 		for i, rev := range app.Spec.Revisions {
 			if i != len(app.Spec.Revisions)-1 {
 				add := int(100.0 / float64(len(app.Spec.Revisions)))
-				app.Status.RevisionWeight[rev.Version] = riov1.ServiceObservedWeight{
+				app.Status.RevisionWeight[rev.Version] = meshv1.ServiceObservedWeight{
 					Weight:      add,
 					LastWrite:   metav1.NewTime(time.Now()),
 					ServiceName: rev.ServiceName,
 				}
 				added += add
 			} else {
-				app.Status.RevisionWeight[rev.Version] = riov1.ServiceObservedWeight{
+				app.Status.RevisionWeight[rev.Version] = meshv1.ServiceObservedWeight{
 					Weight:      100 - added,
 					LastWrite:   metav1.NewTime(time.Now()),
 					ServiceName: rev.ServiceName,
@@ -146,12 +146,12 @@ func (s appWeightHandler) sync(key string, obj *riov1.App) (*riov1.App, error) {
 	return app, nil
 }
 
-func isRolloutSet(rev riov1.Revision) bool {
+func isRolloutSet(rev meshv1.Revision) bool {
 	// return rev.Rollout && rev.RolloutIncrement != 0 && rev.RolloutInterval > 0
 	return false
 }
 
-func versionAndSpecs(specs []riov1.Revision) ([]string, []int) {
+func versionAndSpecs(specs []meshv1.Revision) ([]string, []int) {
 	var versions []string
 	var weights []int
 	for _, spec := range specs {
@@ -171,7 +171,7 @@ func abs(v int) int {
 /*
 	Steal weight from other service. Don't try to read it. :)
 */
-func magicSteal(versions []string, weightSpecs []int, result map[string]riov1.ServiceObservedWeight, weightToAdjust int) {
+func magicSteal(versions []string, weightSpecs []int, result map[string]meshv1.ServiceObservedWeight, weightToAdjust int) {
 	if len(versions) == 0 {
 		return
 	}

@@ -68,6 +68,5 @@ func (p populator) populate(obj runtime.Object, namespace *corev1.Namespace, os 
 		return err
 	}
 
-	populate.VirtualServiceForExternalService(p.namespace, obj.(*apiv1.ExternalService), serviceSet, clusterDomain, svc, os)
-	return nil
+ 	return nil
 }

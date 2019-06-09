@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/serviceports"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -34,8 +34,8 @@ var (
 	}
 )
 
-func containers(service *riov1.Service, init bool) (result []v1.Container) {
-	if !init && !reflect.DeepEqual(service.Spec.Container, riov1.Container{}) {
+func containers(service *meshv1.Service, init bool) (result []v1.Container) {
+	if !init && !reflect.DeepEqual(service.Spec.Container, meshv1.Container{}) {
 		c := toContainer(service.Name, &service.Spec.Container)
 		c.Name = service.Name
 		result = append(result, c)
@@ -54,7 +54,7 @@ func containers(service *riov1.Service, init bool) (result []v1.Container) {
 	return
 }
 
-func toContainer(containerName string, c *riov1.Container) v1.Container {
+func toContainer(containerName string, c *meshv1.Container) v1.Container {
 	return v1.Container{
 		Image:           c.Image,
 		Command:         c.Command,
@@ -74,7 +74,7 @@ func toContainer(containerName string, c *riov1.Container) v1.Container {
 	}
 }
 
-func securityContext(c *riov1.Container) *v1.SecurityContext {
+func securityContext(c *meshv1.Container) *v1.SecurityContext {
 	if c.RunAsUser != nil ||
 		c.RunAsGroup != nil ||
 		c.ReadOnlyRootFilesystem != nil {
@@ -87,14 +87,14 @@ func securityContext(c *riov1.Container) *v1.SecurityContext {
 	return nil
 }
 
-func mounts(c *riov1.Container) (result []v1.VolumeMount) {
+func mounts(c *meshv1.Container) (result []v1.VolumeMount) {
 	config := dataMounts("config", c.Configs)
 	secrets := dataMounts("secret", c.Secrets)
 	emptydirs := volumeMount("emptydir", c.Volumes)
 	return append(config, append(secrets, emptydirs...)...)
 }
 
-func dataMounts(name string, dataMounts []riov1.DataMount) (result []v1.VolumeMount) {
+func dataMounts(name string, dataMounts []meshv1.DataMount) (result []v1.VolumeMount) {
 	readonly := false
 	if name == "secret" {
 		readonly = true
@@ -120,7 +120,7 @@ func dataMounts(name string, dataMounts []riov1.DataMount) (result []v1.VolumeMo
 	return
 }
 
-func volumeMount(name string, volumes []riov1.Volume) (result []v1.VolumeMount) {
+func volumeMount(name string, volumes []meshv1.Volume) (result []v1.VolumeMount) {
 	for i, volume := range volumes {
 		if volume.Name == "" {
 			volume.Name = strconv.Itoa(i)
@@ -134,7 +134,7 @@ func volumeMount(name string, volumes []riov1.Volume) (result []v1.VolumeMount) 
 	return result
 }
 
-func envs(containerName string, c *riov1.Container) (result []v1.EnvVar) {
+func envs(containerName string, c *meshv1.Container) (result []v1.EnvVar) {
 	for _, env := range c.Env {
 		name := env.Name
 		value := env.Value
@@ -206,7 +206,7 @@ func envs(containerName string, c *riov1.Container) (result []v1.EnvVar) {
 	return
 }
 
-func ports(c *riov1.Container) (result []v1.ContainerPort) {
+func ports(c *meshv1.Container) (result []v1.ContainerPort) {
 	for _, port := range c.Ports {
 		result = append(result, v1.ContainerPort{
 			ContainerPort: port.TargetPort,
@@ -217,7 +217,7 @@ func ports(c *riov1.Container) (result []v1.ContainerPort) {
 	return
 }
 
-func resources(c *riov1.Container) (result v1.ResourceRequirements) {
+func resources(c *meshv1.Container) (result v1.ResourceRequirements) {
 	if c.CPUs == nil || c.CPUs.IsZero() {
 		result.Requests = v1.ResourceList{
 			v1.ResourceCPU: defaultCPU,

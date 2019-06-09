@@ -3,13 +3,13 @@ package appweight
 import (
 	"testing"
 
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 )
 
 func TestWeightAdjustOne(t *testing.T) {
 	versions := []string{"v0", "v1"}
 	weights := []int{0, 0}
-	result := map[string]riov1.ServiceObservedWeight{
+	result := map[string]meshv1.ServiceObservedWeight{
 		"v0": {
 			Weight: 50,
 		},
@@ -32,7 +32,7 @@ func TestWeightAdjustOne(t *testing.T) {
 func TestWeightAdjustTwo(t *testing.T) {
 	versions := []string{"v0", "v1", "v2"}
 	weights := []int{50, 30, 20}
-	result := map[string]riov1.ServiceObservedWeight{
+	result := map[string]meshv1.ServiceObservedWeight{
 		"v0": {
 			Weight: 40,
 		},
@@ -61,7 +61,7 @@ func TestWeightAdjustTwo(t *testing.T) {
 func TestWeightAdjustThree(t *testing.T) {
 	versions := []string{"v0", "v1"}
 	weights := []int{100, 0}
-	result := map[string]riov1.ServiceObservedWeight{
+	result := map[string]meshv1.ServiceObservedWeight{
 		"v0": {
 			Weight: 0,
 		},

@@ -6,14 +6,14 @@ import (
 
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/istio/pkg/parse"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func ServiceForExternalService(es *riov1.ExternalService, namespace *corev1.Namespace, os *objectset.ObjectSet) error {
+func ServiceForExternalService(es *meshv1.ExternalService, namespace *corev1.Namespace, os *objectset.ObjectSet) error {
 	svc := constructors.NewService(namespace.Name, es.Name, v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels: map[string]string{

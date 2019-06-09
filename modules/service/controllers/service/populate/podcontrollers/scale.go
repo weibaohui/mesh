@@ -1,7 +1,7 @@
 package podcontrollers
 
 import (
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
@@ -12,7 +12,7 @@ type scaleParams struct {
 	BatchSize      int
 }
 
-func parseScaleParams(service *riov1.ServiceSpec) scaleParams {
+func parseScaleParams(service *meshv1.ServiceSpec) scaleParams {
 	scale := int32(service.Scale)
 	batchSize := service.UpdateBatchSize
 

@@ -17,7 +17,7 @@ var (
 	IstioTelemetry           = "istio-telemetry"
 	ProductionType           = "production"
 	Prometheus               = "prometheus"
-	MeshGateway              = "mesh-gateway"
+	MeshGateway              = "mesh"
 	StagingType              = "staging"
 	ClusterDomainName        = "cluster.local"
 )

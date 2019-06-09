@@ -5,11 +5,11 @@ import (
 	"sort"
 	"strconv"
 
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
-func volumes(service *riov1.Service) (result []v1.Volume) {
+func volumes(service *meshv1.Service) (result []v1.Volume) {
 	secrets := secretNames(&service.Spec.Container)
 	configMaps := configMapNames(&service.Spec.Container)
 
@@ -70,14 +70,14 @@ func volumes(service *riov1.Service) (result []v1.Volume) {
 	return
 }
 
-func secretNames(c *riov1.Container) (result []string) {
+func secretNames(c *meshv1.Container) (result []string) {
 	for _, mount := range c.Secrets {
 		result = append(result, mount.Name)
 	}
 	return
 }
 
-func configMapNames(c *riov1.Container) (result []string) {
+func configMapNames(c *meshv1.Container) (result []string) {
 	for _, mount := range c.Configs {
 		result = append(result, mount.Name)
 	}

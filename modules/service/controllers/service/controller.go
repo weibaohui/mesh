@@ -5,8 +5,8 @@ import (
 
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
-	riov1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/stackobject"
 	"github.com/weibaohui/mesh/types"
 	corev1 "k8s.io/api/core/v1"
@@ -41,13 +41,13 @@ func Register(ctx context.Context, mContext *types.Context) error {
 
 type serviceHandler struct {
 	namespace     string
-	serviceClient riov1controller.ServiceController
-	serviceCache  riov1controller.ServiceCache
+	serviceClient meshv1controller.ServiceController
+	serviceCache  meshv1controller.ServiceCache
 }
 
 func (s *serviceHandler) populate(obj runtime.Object, ns *corev1.Namespace, os *objectset.ObjectSet) error {
 
-	service := obj.(*riov1.Service)
+	service := obj.(*meshv1.Service)
 	if service.Namespace != s.namespace && service.SystemSpec != nil {
 		service = service.DeepCopy()
 		service.SystemSpec = nil

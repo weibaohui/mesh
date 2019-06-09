@@ -6,7 +6,7 @@ import (
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/rbac"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/stackobject"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -26,7 +26,7 @@ var (
 	}
 )
 
-func Populate(service *riov1.Service, os *objectset.ObjectSet) (v1.PodTemplateSpec, error) {
+func Populate(service *meshv1.Service, os *objectset.ObjectSet) (v1.PodTemplateSpec, error) {
 	pts := v1.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
 			Labels:      servicelabels.ServiceLabels(service),
@@ -48,7 +48,7 @@ func Populate(service *riov1.Service, os *objectset.ObjectSet) (v1.PodTemplateSp
 	return pts, nil
 }
 
-func Roles(service *riov1.Service, podSpec *v1.PodSpec, os *objectset.ObjectSet) {
+func Roles(service *meshv1.Service, podSpec *v1.PodSpec, os *objectset.ObjectSet) {
 	if err := rbac.Populate(service, os); err != nil {
 		os.AddErr(err)
 		return
@@ -61,7 +61,7 @@ func Roles(service *riov1.Service, podSpec *v1.PodSpec, os *objectset.ObjectSet)
 	}
 }
 
-func images(service *riov1.Service, podSpec *v1.PodSpec) error {
+func images(service *meshv1.Service, podSpec *v1.PodSpec) error {
 	for i, container := range podSpec.InitContainers {
 		image := service.Status.ContainerImages[container.Name]
 		if image != "" {

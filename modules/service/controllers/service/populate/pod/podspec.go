@@ -2,7 +2,7 @@ package pod
 
 import (
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/rbac"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )
@@ -14,7 +14,7 @@ var (
 	defaultMemory = resource.MustParse("64Mi")
 )
 
-func podSpec(service *riov1.Service) v1.PodSpec {
+func podSpec(service *meshv1.Service) v1.PodSpec {
 	podSpec := v1.PodSpec{
 		DNSConfig:          podDNS(service),
 		DNSPolicy:          service.Spec.DNSPolicy,
@@ -37,7 +37,7 @@ func podSpec(service *riov1.Service) v1.PodSpec {
 	return podSpec
 }
 
-func podDNS(service *riov1.Service) *v1.PodDNSConfig {
+func podDNS(service *meshv1.Service) *v1.PodDNSConfig {
 	if len(service.Spec.PodDNSConfig.Options) == 0 &&
 		len(service.Spec.PodDNSConfig.Nameservers) == 0 &&
 		len(service.Spec.PodDNSConfig.Searches) == 0 {

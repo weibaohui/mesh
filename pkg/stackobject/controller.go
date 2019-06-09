@@ -2,6 +2,7 @@ package stackobject
 
 import (
 	"context"
+	"fmt"
 	"github.com/rancher/mapper/convert"
 	"github.com/rancher/wrangler/pkg/condition"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
@@ -40,11 +41,11 @@ type Controller struct {
 	injectors      []string
 }
 
-func NewGeneratingController(ctx context.Context, rContext *types.Context, name string, controller ControllerWrapper, injectors ...string) *Controller {
+func NewGeneratingController(ctx context.Context, mContext *types.Context, name string, controller ControllerWrapper, injectors ...string) *Controller {
 	sc := &Controller{
 		name:           name,
-		Apply:          rContext.Apply.WithSetID(name).WithStrictCaching(),
-		namespaceCache: rContext.Core.Core().V1().Namespace().Cache(),
+		Apply:          mContext.Apply.WithSetID(name).WithStrictCaching(),
+		namespaceCache: mContext.Core.Core().V1().Namespace().Cache(),
 		injectors:      injectors,
 		indexer:        controller.Informer().GetIndexer(),
 	}

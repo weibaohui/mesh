@@ -4,13 +4,13 @@ import (
 	"github.com/rancher/wrangler/pkg/name"
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func Populate(service *riov1.Service, os *objectset.ObjectSet) error {
+func Populate(service *meshv1.Service, os *objectset.ObjectSet) error {
 	labels := servicelabels.ServiceLabels(service)
 	subject := subject(service)
 	if subject == nil {
@@ -24,7 +24,7 @@ func Populate(service *riov1.Service, os *objectset.ObjectSet) error {
 	return nil
 }
 
-func subject(service *riov1.Service) *v1.Subject {
+func subject(service *meshv1.Service) *v1.Subject {
 	name := ServiceAccountName(service)
 	if name == "" {
 		return nil
@@ -38,7 +38,7 @@ func subject(service *riov1.Service) *v1.Subject {
 
 }
 
-func ServiceAccountName(service *riov1.Service) string {
+func ServiceAccountName(service *meshv1.Service) string {
 	// if len(service.Spec.Permissions) == 0 &&
 	// 	len(service.Spec.GlobalPermissions) == 0 {
 	// 	return ""
@@ -46,12 +46,12 @@ func ServiceAccountName(service *riov1.Service) string {
 	return service.Name
 }
 
-func addRoles(labels map[string]string, subject v1.Subject, service *riov1.Service, os *objectset.ObjectSet) {
+func addRoles(labels map[string]string, subject v1.Subject, service *meshv1.Service, os *objectset.ObjectSet) {
 	// for _, role := range service.Spec.Permissions {
 	// 	if role.Role == "" {
 	// 		continue
 	// 	}
-	// 	roleBinding := newBinding(service.Namespace, name.SafeConcatName("rio", service.Name, role.Role), labels)
+	// 	roleBinding := newBinding(service.Namespace, name.SafeConcatName("mesh", service.Name, role.Role), labels)
 	// 	roleBinding.Subjects = []v1.Subject{
 	// 		subject,
 	// 	}
@@ -67,7 +67,7 @@ func addRoles(labels map[string]string, subject v1.Subject, service *riov1.Servi
 	// 	if role.Role == "" {
 	// 		continue
 	// 	}
-	// 	roleBinding := newClusterBinding(name.SafeConcatName("rio", service.Namespace, service.Name, role.Role), labels)
+	// 	roleBinding := newClusterBinding(name.SafeConcatName("mesh", service.Namespace, service.Name, role.Role), labels)
 	// 	roleBinding.Subjects = []v1.Subject{
 	// 		subject,
 	// 	}
@@ -80,8 +80,8 @@ func addRoles(labels map[string]string, subject v1.Subject, service *riov1.Servi
 	// }
 }
 
-func addRules(labels map[string]string, subject v1.Subject, service *riov1.Service, os *objectset.ObjectSet) {
-	role := newRole(service.Namespace, name.SafeConcatName("rio", service.Name), labels)
+func addRules(labels map[string]string, subject v1.Subject, service *meshv1.Service, os *objectset.ObjectSet) {
+	role := newRole(service.Namespace, name.SafeConcatName("mesh", service.Name), labels)
 	// for _, perm := range service.Spec.Permissions {
 	// 	if perm.Role != "" {
 	// 		continue
@@ -95,7 +95,7 @@ func addRules(labels map[string]string, subject v1.Subject, service *riov1.Servi
 	if len(role.Rules) > 0 {
 		os.Add(role)
 
-		roleBinding := newBinding(service.Namespace, name.SafeConcatName("rio", service.Name, role.Name), labels)
+		roleBinding := newBinding(service.Namespace, name.SafeConcatName("mesh", service.Name, role.Name), labels)
 		roleBinding.Subjects = []v1.Subject{
 			subject,
 		}
@@ -108,8 +108,8 @@ func addRules(labels map[string]string, subject v1.Subject, service *riov1.Servi
 	}
 }
 
-func addClusterRules(labels map[string]string, subject v1.Subject, service *riov1.Service, os *objectset.ObjectSet) {
-	role := newClusterRole(name.SafeConcatName("rio", service.Namespace, service.Name), labels)
+func addClusterRules(labels map[string]string, subject v1.Subject, service *meshv1.Service, os *objectset.ObjectSet) {
+	role := newClusterRole(name.SafeConcatName("mesh", service.Namespace, service.Name), labels)
 	// for _, perm := range service.Spec.GlobalPermissions {
 	// 	if perm.Role != "" {
 	// 		continue
@@ -123,7 +123,7 @@ func addClusterRules(labels map[string]string, subject v1.Subject, service *riov
 	if len(role.Rules) > 0 {
 		os.Add(role)
 
-		roleBinding := newClusterBinding(name.SafeConcatName("rio", service.Namespace, service.Name, role.Name), labels)
+		roleBinding := newClusterBinding(name.SafeConcatName("mesh", service.Namespace, service.Name, role.Name), labels)
 		roleBinding.Subjects = []v1.Subject{
 			subject,
 		}
@@ -137,7 +137,7 @@ func addClusterRules(labels map[string]string, subject v1.Subject, service *riov
 }
 
 //
-// func permToPolicyRule(perm riov1.Permission) (v1.PolicyRule, bool) {
+// func permToPolicyRule(perm meshv1.Permission) (v1.PolicyRule, bool) {
 // 	policyRule := v1.PolicyRule{}
 // 	valid := false
 //

@@ -6,7 +6,7 @@ import (
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/serviceports"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/constructors"
 	"github.com/weibaohui/mesh/pkg/services"
@@ -15,7 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-func serviceSelector(service *riov1.Service, systemNamespace string, os *objectset.ObjectSet) {
+func serviceSelector(service *meshv1.Service, systemNamespace string, os *objectset.ObjectSet) {
 	labels := servicelabels.ServiceLabels(service)
 	selectorLabels := servicelabels.SelectorLabels(service)
 	app, version := services.AppAndVersion(service)
@@ -46,7 +46,7 @@ func serviceSelector(service *riov1.Service, systemNamespace string, os *objects
 	os.Add(svc)
 }
 
-func isGateway(service *riov1.Service, systemNamespace string) bool {
+func isGateway(service *meshv1.Service, systemNamespace string) bool {
 	return service.Name == constants.IstioGateway && service.Namespace == systemNamespace
 }
 

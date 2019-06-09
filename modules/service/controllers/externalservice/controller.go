@@ -5,7 +5,7 @@ import (
 
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/externalservice/populate"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	v12 "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/stackobject"
 	"github.com/weibaohui/mesh/types"
@@ -32,5 +32,5 @@ type populator struct {
 }
 
 func (p populator) populate(obj runtime.Object, namespace *corev1.Namespace, os *objectset.ObjectSet) error {
-	return populate.ServiceForExternalService(obj.(*riov1.ExternalService), namespace, os)
+	return populate.ServiceForExternalService(obj.(*meshv1.ExternalService), namespace, os)
 }

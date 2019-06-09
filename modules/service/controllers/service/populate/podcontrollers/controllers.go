@@ -4,11 +4,11 @@ import (
 	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/pod"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
-func Populate(service *riov1.Service, os *objectset.ObjectSet) error {
+func Populate(service *meshv1.Service, os *objectset.ObjectSet) error {
 	if service.SystemSpec != nil {
 		pod.Roles(service, &service.SystemSpec.PodSpec, os)
 		cp := newControllerParams(service, v1.PodTemplateSpec{Spec: service.SystemSpec.PodSpec})
@@ -36,7 +36,7 @@ func Populate(service *riov1.Service, os *objectset.ObjectSet) error {
 	return nil
 }
 
-func isImageSet(service *riov1.Service) bool {
+func isImageSet(service *meshv1.Service) bool {
 	if service.Spec.Image == "" && service.Spec.Build != nil {
 		return false
 	}
@@ -48,7 +48,7 @@ func isImageSet(service *riov1.Service) bool {
 	return true
 }
 
-func newControllerParams(service *riov1.Service, podTemplateSpec v1.PodTemplateSpec) *controllerParams {
+func newControllerParams(service *meshv1.Service, podTemplateSpec v1.PodTemplateSpec) *controllerParams {
 	scaleParams := parseScaleParams(&service.Spec)
 	selectorLabels := servicelabels.SelectorLabels(service)
 	labels := servicelabels.ServiceLabels(service)

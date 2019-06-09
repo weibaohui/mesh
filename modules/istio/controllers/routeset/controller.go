@@ -13,10 +13,10 @@ import (
 	"github.com/rancher/wrangler/pkg/relatedresource"
 	"github.com/weibaohui/mesh/modules/istio/pkg/domains"
 	adminv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constants"
 	projectv1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
-	riov1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
+	meshv1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -53,7 +53,7 @@ func Register(ctx context.Context, mContent *types.Context) error {
 
 func (r routeSetHandler) resolve(namespace, name string, obj runtime.Object) ([]relatedresource.Key, error) {
 	switch obj.(type) {
-	case *riov1.ExternalService:
+	case *meshv1.ExternalService:
 		routesets, err := r.routesetCache.List(namespace, labels.Everything())
 		if err != nil {
 			return nil, err
@@ -70,15 +70,15 @@ func (r routeSetHandler) resolve(namespace, name string, obj runtime.Object) ([]
 type routeSetHandler struct {
 	systemNamespace      string
 	secretCache          corev1controller.SecretCache
-	externalServiceCache riov1controller.ExternalServiceCache
-	routesetCache        riov1controller.RouterCache
+	externalServiceCache meshv1controller.ExternalServiceCache
+	routesetCache        meshv1controller.RouterCache
 	clusterDomainCache   projectv1controller.ClusterDomainCache
 }
 
 func (r *routeSetHandler) populate(obj runtime.Object, ns *corev1.Namespace, os *objectset.ObjectSet) error {
-	routeSet := obj.(*riov1.Router)
-	externalServiceMap := map[string]*riov1.ExternalService{}
-	routesetMap := map[string]*riov1.Router{}
+	routeSet := obj.(*meshv1.Router)
+	externalServiceMap := map[string]*meshv1.ExternalService{}
+	routesetMap := map[string]*meshv1.Router{}
 
 	clusterDomain, err := r.clusterDomainCache.Get(r.systemNamespace, constants.ClusterDomainName)
 	if err != nil {
@@ -101,7 +101,7 @@ func (r *routeSetHandler) populate(obj runtime.Object, ns *corev1.Namespace, os 
 		routesetMap[rs.Name] = rs
 	}
 
-	if err := populate.VirtualServices(r.systemNamespace, clusterDomain, obj.(*riov1.Router), externalServiceMap, routesetMap, os); err != nil {
+	if err := populate.VirtualServices(r.systemNamespace, clusterDomain, obj.(*meshv1.Router), externalServiceMap, routesetMap, os); err != nil {
 		return err
 	}
 
@@ -118,12 +118,12 @@ func (r *routeSetHandler) syncDomain(key string, obj runtime.Object) (runtime.Ob
 		return obj, err
 	}
 
-	updateDomain(obj.(*riov1.Router), clusterDomain)
+	updateDomain(obj.(*meshv1.Router), clusterDomain)
 
 	return obj, nil
 }
 
-func updateDomain(router *riov1.Router, clusterDomain *adminv1.ClusterDomain) {
+func updateDomain(router *meshv1.Router, clusterDomain *adminv1.ClusterDomain) {
 	protocol := "http"
 	if clusterDomain.Status.HTTPSSupported {
 		protocol = "https"

@@ -3,7 +3,6 @@ package istio
 import (
 	"context"
 	"fmt"
-	"github.com/weibaohui/mesh/modules/istio/controllers/istio/populate"
 	"github.com/weibaohui/mesh/modules/istio/pkg/istio/config"
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/types"
@@ -14,13 +13,12 @@ import (
 	corev1controller "github.com/rancher/wrangler-api/pkg/generated/controllers/core/v1"
 	"github.com/rancher/wrangler/pkg/apply"
 	"github.com/rancher/wrangler/pkg/apply/injectors"
-	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/rancher/wrangler/pkg/relatedresource"
 	"github.com/rancher/wrangler/pkg/trigger"
 	"github.com/sirupsen/logrus"
 	adminv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	adminv1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
-	riov1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
+	meshv1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -47,9 +45,6 @@ var (
 )
 
 func Register(ctx context.Context, mContext *types.Context) error {
-	if err := ensureClusterDomain(mContext.Namespace, mContext.Mesh.Mesh().V1().ClusterDomain()); err != nil {
-		return err
-	}
 
 	if err := setupConfigmapAndInjectors(ctx, mContext); err != nil {
 		return err
@@ -74,13 +69,7 @@ func Register(ctx context.Context, mContext *types.Context) error {
 		daemonsets:    mContext.Apps.Apps().V1().DaemonSet(),
 	}
 
-	relatedresource.Watch(ctx, "app-clusterdomain", s.resolveApp,
-		mContext.Mesh.Mesh().V1().App(),
-		mContext.Mesh.Mesh().V1().ClusterDomain())
 
-	relatedresource.Watch(ctx, "publicdomain-clusterdomain", s.resolve,
-		mContext.Mesh.Mesh().V1().Service(),
-		mContext.Mesh.Mesh().V1().ClusterDomain())
 
 	relatedresource.Watch(ctx, "node-enpoint", s.resolveEndpoint,
 		mContext.Core.Core().V1().Endpoints(),
@@ -100,8 +89,6 @@ func Register(ctx context.Context, mContext *types.Context) error {
 	}
 
 	mContext.Core.Core().V1().Service().OnChange(ctx, "rdns-subdomain", s.syncSubdomain)
-	mContext.Mesh.Mesh().V1().ClusterDomain().OnChange(ctx, "clusterdomain-gateway", s.syncGateway)
-
 	mContext.Core.Core().V1().Node().OnChange(ctx, "gateway-daemonset-update", s.onChangeNode)
 
 	return nil
@@ -112,8 +99,8 @@ type istioDeployController struct {
 	apply         apply.Apply
 	gatewayApply  apply.Apply
 	serviceApply  apply.Apply
-	apps          riov1controller.AppController
-	services      riov1controller.ServiceController
+	apps          meshv1controller.AppController
+	services      meshv1controller.ServiceController
 	clusterDomain adminv1controller.ClusterDomainController
 	secretCache   corev1controller.SecretCache
 	nodeCache     corev1controller.NodeCache
@@ -172,22 +159,8 @@ func (i istioDeployController) syncServiceLoadbalancer(key string, obj *v1.Servi
 	return obj, nil
 }
 
-func (i istioDeployController) syncGateway(key string, obj *adminv1.ClusterDomain) (*adminv1.ClusterDomain, error) {
-	if obj == nil || obj.DeletionTimestamp != nil || obj.Name != constants.ClusterDomainName {
-		return obj, nil
-	}
 
-	os := objectset.NewObjectSet()
-	domain := ""
-	if obj.Status.ClusterDomain != "" {
-		domain = fmt.Sprintf("*.%s", obj.Status.ClusterDomain)
-	}
-
-	populate.Gateway(i.namespace, domain, os)
-	return obj, i.apply.WithSetID("istio-gateway").Apply(os)
-}
-
-func enqueueServicesForInject(controller riov1controller.ServiceController) error {
+func enqueueServicesForInject(controller meshv1controller.ServiceController) error {
 	svcs, err := controller.Cache().List("", labels.Everything())
 	if err != nil {
 		return err
@@ -196,46 +169,6 @@ func enqueueServicesForInject(controller riov1controller.ServiceController) erro
 		controller.Enqueue(svc.Namespace, svc.Name)
 	}
 	return nil
-}
-
-func (i *istioDeployController) resolve(namespace, name string, obj runtime.Object) ([]relatedresource.Key, error) {
-	switch obj.(type) {
-	case *adminv1.ClusterDomain:
-		svcs, err := i.services.Cache().List("", labels.NewSelector())
-		if err != nil {
-			return nil, err
-		}
-		var keys []relatedresource.Key
-		for _, svc := range svcs {
-			keys = append(keys, relatedresource.Key{
-				Name:      svc.Name,
-				Namespace: svc.Namespace,
-			})
-		}
-		return keys, nil
-
-	}
-
-	return nil, nil
-}
-
-func (i *istioDeployController) resolveApp(namespace, name string, obj runtime.Object) ([]relatedresource.Key, error) {
-	switch obj.(type) {
-	case *adminv1.ClusterDomain:
-		apps, err := i.apps.Cache().List("", labels.NewSelector())
-		if err != nil {
-			return nil, err
-		}
-		var keys []relatedresource.Key
-		for _, app := range apps {
-			keys = append(keys, relatedresource.Key{
-				Name:      app.Name,
-				Namespace: app.Namespace,
-			})
-		}
-		return keys, nil
-	}
-	return nil, nil
 }
 
 func (i *istioDeployController) resolveEndpoint(namespace, name string, obj runtime.Object) ([]relatedresource.Key, error) {
@@ -321,8 +254,7 @@ func (i *istioDeployController) indexEPByNode(ep *corev1.Endpoints) ([]string, e
 	}
 
 	var result []string
-
-	for _, subset := range ep.Subsets {
+ 	for _, subset := range ep.Subsets {
 		for _, addr := range subset.Addresses {
 			if addr.NodeName != nil {
 				result = append(result, *addr.NodeName)
@@ -389,8 +321,8 @@ func getNodeIP(node *v1.Node) string {
 	return ""
 }
 
-func setupConfigmapAndInjectors(ctx context.Context, rContext *types.Context) error {
-	cm, err := rContext.Core.Core().V1().ConfigMap().Get(rContext.Namespace, constants.IstionConfigMapName, metav1.GetOptions{})
+func setupConfigmapAndInjectors(ctx context.Context, mContext *types.Context) error {
+	cm, err := mContext.Core.Core().V1().ConfigMap().Get(mContext.Namespace, constants.IstionConfigMapName, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -402,20 +334,4 @@ func setupConfigmapAndInjectors(ctx context.Context, rContext *types.Context) er
 	injector := config.NewIstioInjector(meshConfig, template)
 	injectors.Register(istioInjector, injector.Inject)
 	return nil
-}
-
-func ensureClusterDomain(ns string, clusterDomain adminv1controller.ClusterDomainClient) error {
-	_, err := clusterDomain.Get(ns, constants.ClusterDomainName, metav1.GetOptions{})
-	if errors.IsNotFound(err) {
-		_, err := clusterDomain.Create(adminv1.NewClusterDomain(ns, constants.ClusterDomainName, adminv1.ClusterDomain{
-			Spec: adminv1.ClusterDomainSpec{
-				SecretRef: v1.SecretReference{
-					Namespace: ns,
-					Name:      constants.GatewaySecretName,
-				},
-			},
-		}))
-		return err
-	}
-	return err
 }

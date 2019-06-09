@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/rancher/wrangler/pkg/condition"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
+	meshv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	v1 "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/types"
 	appsv1 "k8s.io/api/apps/v1"
@@ -38,7 +38,7 @@ type subServiceController struct {
 	serviceLister v1.ServiceCache
 }
 
-func (s *subServiceController) updateStatus(service, newService *riov1.Service, dep runtime.Object, generation, observedGeneration int64) error {
+func (s *subServiceController) updateStatus(service, newService *meshv1.Service, dep runtime.Object, generation, observedGeneration int64) error {
 	isUpgrading := false
 
 	if upgrading[progressing.GetReason(dep)] || generation != observedGeneration {
@@ -79,7 +79,7 @@ func (s *subServiceController) deploymentChanged(key string, dep *appsv1.Deploym
 	newService := service.DeepCopy()
 	newService.Status.DeploymentStatus = dep.Status.DeepCopy()
 	newService.Status.DeploymentStatus.ObservedGeneration = 0
-	newService.Status.ScaleStatus = &riov1.ScaleStatus{
+	newService.Status.ScaleStatus = &meshv1.ScaleStatus{
 		Ready:       int(dep.Status.ReadyReplicas),
 		Unavailable: int(dep.Status.UnavailableReplicas),
 		Available:   int(dep.Status.AvailableReplicas - dep.Status.ReadyReplicas),

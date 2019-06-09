@@ -38,7 +38,7 @@ func deployment(service *riov1.Service, cp *controllerParams, os *objectset.Obje
 	}
 
 	os.Add(dep)
- }
+}
 
 func daemonset(service *riov1.Service, cp *controllerParams, os *objectset.ObjectSet) {
 	ds := constructors.NewDaemonset(service.Namespace, service.Name, appsv1.Deployment{

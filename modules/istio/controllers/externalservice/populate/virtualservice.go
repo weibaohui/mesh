@@ -1,7 +1,7 @@
 package populate
 
 import (
-  	"github.com/rancher/wrangler/pkg/objectset"
+	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/istio/controllers/service/populate"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/serviceset"

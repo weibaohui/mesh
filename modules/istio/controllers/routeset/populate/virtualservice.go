@@ -105,7 +105,6 @@ func virtualServiceFromRoutesets(systemNamespace string, clusterDomain *projectv
 			}
 		}
 
-
 		if routeSpec.Redirect != nil {
 			httpRoute.Redirect = &v1alpha3.HTTPRedirect{
 				URI:       routeSpec.Redirect.Path,

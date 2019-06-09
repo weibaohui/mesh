@@ -3,12 +3,12 @@ package service
 import (
 	"context"
 
+	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	riov1controller "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/stackobject"
 	"github.com/weibaohui/mesh/types"
-	"github.com/rancher/wrangler/pkg/objectset"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -25,7 +25,7 @@ func Register(ctx context.Context, mContext *types.Context) error {
 		mContext.Core.Core().V1().ServiceAccount(),
 		mContext.Core.Core().V1().Service(),
 		mContext.Core.Core().V1().Secret(),
-		).
+	).
 		WithRateLimiting(5).
 		WithStrictCaching()
 

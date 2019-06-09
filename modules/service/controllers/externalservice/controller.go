@@ -3,12 +3,12 @@ package externalservice
 import (
 	"context"
 
+	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/externalservice/populate"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	v12 "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/stackobject"
 	"github.com/weibaohui/mesh/types"
-	"github.com/rancher/wrangler/pkg/objectset"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )

@@ -1,9 +1,9 @@
 package populate
 
 import (
+	"github.com/rancher/wrangler/pkg/objectset"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
-	"github.com/rancher/wrangler/pkg/objectset"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"

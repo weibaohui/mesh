@@ -1,10 +1,10 @@
 package rbac
 
 import (
-	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
-	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/rancher/wrangler/pkg/name"
 	"github.com/rancher/wrangler/pkg/objectset"
+	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
+	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -135,6 +135,7 @@ func addClusterRules(labels map[string]string, subject v1.Subject, service *riov
 		os.Add(roleBinding)
 	}
 }
+
 //
 // func permToPolicyRule(perm riov1.Permission) (v1.PolicyRule, bool) {
 // 	policyRule := v1.PolicyRule{}

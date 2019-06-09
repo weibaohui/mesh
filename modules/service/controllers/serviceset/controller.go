@@ -4,6 +4,10 @@ import (
 	"context"
 	"sort"
 
+	corev1controller "github.com/rancher/wrangler-api/pkg/generated/controllers/core/v1"
+	v1 "github.com/rancher/wrangler-api/pkg/generated/controllers/core/v1"
+	"github.com/rancher/wrangler/pkg/apply"
+	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/serviceports"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constructors"
@@ -11,10 +15,6 @@ import (
 	services2 "github.com/weibaohui/mesh/pkg/services"
 	"github.com/weibaohui/mesh/pkg/serviceset"
 	"github.com/weibaohui/mesh/types"
-	corev1controller "github.com/rancher/wrangler-api/pkg/generated/controllers/core/v1"
-	v1 "github.com/rancher/wrangler-api/pkg/generated/controllers/core/v1"
-	"github.com/rancher/wrangler/pkg/apply"
-	"github.com/rancher/wrangler/pkg/objectset"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	v12 "k8s.io/api/core/v1"
@@ -133,7 +133,7 @@ func (h *handler) onChange(key string, service *riov1.Service) (*riov1.Service, 
 			Version:         version,
 			Scale:           scale,
 			ScaleStatus:     scaleStatus,
- 			DeploymentReady: IsReady(service.Status.DeploymentStatus),
+			DeploymentReady: IsReady(service.Status.DeploymentStatus),
 		})
 		totalweight += service.Spec.Weight
 	}

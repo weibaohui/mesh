@@ -3,11 +3,11 @@ package pod
 import (
 	"strings"
 
+	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/rbac"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/stackobject"
-	"github.com/rancher/wrangler/pkg/objectset"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

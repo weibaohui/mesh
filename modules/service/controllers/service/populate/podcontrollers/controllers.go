@@ -1,10 +1,10 @@
 package podcontrollers
 
 import (
+	"github.com/rancher/wrangler/pkg/objectset"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/pod"
 	"github.com/weibaohui/mesh/modules/service/controllers/service/populate/servicelabels"
 	riov1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
-	"github.com/rancher/wrangler/pkg/objectset"
 	v1 "k8s.io/api/core/v1"
 )
 

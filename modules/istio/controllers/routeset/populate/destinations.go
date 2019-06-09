@@ -6,8 +6,8 @@ import (
 	"github.com/weibaohui/mesh/pkg/constructors"
 
 	"github.com/knative/pkg/apis/istio/v1alpha3"
+	"github.com/rancher/wrangler/pkg/objectset"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
- 	"github.com/rancher/wrangler/pkg/objectset"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )

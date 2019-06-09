@@ -13,7 +13,6 @@ func GetExternalDomain(name, namespace, clusterDomain string) string {
 	return fmt.Sprintf("%s-%s.%s", name, namespace, clusterDomain)
 }
 
-
 func GetExternalDomainDot(name, namespace, clusterDomain string) string {
 	return fmt.Sprintf("%s.%s.%s", name, namespace, clusterDomain)
 }

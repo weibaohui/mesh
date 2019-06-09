@@ -15,7 +15,6 @@ func NewNamespace(name string, obj v1.Namespace) *v1.Namespace {
 	return &obj
 }
 
-
 func NewSecret(namespace, name string, obj v1.Secret) *v1.Secret {
 	obj.APIVersion = "v1"
 	obj.Kind = "Secret"

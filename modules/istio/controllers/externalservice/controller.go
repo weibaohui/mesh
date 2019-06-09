@@ -3,13 +3,12 @@ package externalservice
 import (
 	"context"
 	"github.com/weibaohui/mesh/modules/istio/controllers/externalservice/populate"
+	apiv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/constants"
 	v1 "github.com/weibaohui/mesh/pkg/generated/controllers/mesh.oauthd.com/v1"
-	apiv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/serviceset"
 	"github.com/weibaohui/mesh/pkg/stackobject"
 	"github.com/weibaohui/mesh/types"
-
 
 	"github.com/rancher/wrangler/pkg/kv"
 	"github.com/rancher/wrangler/pkg/objectset"

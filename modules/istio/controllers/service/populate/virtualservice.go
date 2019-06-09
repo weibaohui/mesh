@@ -24,9 +24,8 @@ const (
 
 func virtualServices(namespace string, clusterDomain *v1.ClusterDomain, service *v1.Service, os *objectset.ObjectSet) error {
 	os.Add(virtualServiceFromService(namespace, clusterDomain, service)...)
- 	return nil
+	return nil
 }
-
 
 func httpRoutes(systemNamespace string, service *v1.Service, dests []Dest) ([]v1alpha3.HTTPRoute, bool) {
 	external := false
@@ -168,7 +167,7 @@ func virtualServiceFromService(namespace string, clusterDomain *v1.ClusterDomain
 	return result
 }
 
-func VirtualServiceFromSpecUnion(systemNamespace,appName,domain,gwName string,service *v1.Service,dests ...Dest)  *v1alpha3.VirtualService{
+func VirtualServiceFromSpecUnion(systemNamespace, appName, domain, gwName string, service *v1.Service, dests ...Dest) *v1alpha3.VirtualService {
 	routes, _ := httpRoutes(systemNamespace, service, dests)
 	if len(routes) == 0 {
 		return nil
@@ -184,7 +183,7 @@ func VirtualServiceFromSpecUnion(systemNamespace,appName,domain,gwName string,se
 		Gateways: []string{privateGw},
 		HTTP:     routes,
 	}
-	spec.Gateways = append(spec.Gateways, gwName,)
+	spec.Gateways = append(spec.Gateways, gwName)
 	spec.Hosts = append(spec.Hosts, domain)
 
 	vs.Spec = spec
@@ -223,7 +222,7 @@ func VirtualServiceFromSpec(aggregated bool, systemNamespace string, nameWithVer
 		spec.Gateways = append(spec.Gateways, externalGW)
 
 		//加入vs自己关联的gateway
-		spec.Gateways = append(spec.Gateways, service.Name+"-gateway",)
+		spec.Gateways = append(spec.Gateways, service.Name+"-gateway")
 
 		externalHost := domains.GetExternalDomainDot(nameWithVersion, service.Namespace, "oauthd.com")
 		spec.Hosts = append(spec.Hosts, externalHost)

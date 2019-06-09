@@ -5,7 +5,7 @@ import (
 	"github.com/weibaohui/mesh/pkg/constructors"
 
 	"github.com/knative/pkg/apis/istio/v1alpha3"
- 	"github.com/rancher/wrangler/pkg/objectset"
+	"github.com/rancher/wrangler/pkg/objectset"
 	apiv1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 )
 

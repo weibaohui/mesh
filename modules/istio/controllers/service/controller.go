@@ -62,8 +62,7 @@ type serviceHandler struct {
 
 func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace, os *objectset.ObjectSet) error {
 
-
- 	service := obj.(*riov1.Service)
+	service := obj.(*riov1.Service)
 	if service.Spec.DisableServiceMesh {
 		return nil
 	}
@@ -73,7 +72,6 @@ func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespac
 		return err
 	}
 
-
 	if err := populate.DestinationRulesAndVirtualServices(s.systemNamespace, clusterDomain, service, os); err != nil {
 		return err
 	}
@@ -82,7 +80,6 @@ func (s *serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespac
 }
 
 func (s *serviceHandler) syncDomain(key string, svc *riov1.Service) (*riov1.Service, error) {
-
 
 	if svc == nil {
 		return svc, nil

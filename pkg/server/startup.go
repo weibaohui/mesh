@@ -58,7 +58,8 @@ func GlobalContext() *types.Context {
 	if globalContext == nil {
 		return nil
 	}
-	return globalContext
+
+  	return globalContext
 }
 func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 	restConfig, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
@@ -70,9 +71,10 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 		return err
 	}
 
-	// todo 保存下来，共享
+	// 保存下来，共享
 	ctx, meshContext := types.BuildContext(ctx, systemNamespace, restConfig)
 	globalContext = meshContext
+
 
 	namespaceClient := meshContext.Core.Core().V1().Namespace()
 	if _, err := namespaceClient.Get(systemNamespace, metav1.GetOptions{}); err != nil {
@@ -89,7 +91,7 @@ func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
 		func(ctx context.Context) {
 			runtime.Must(modules.Register(ctx, meshContext))
 			runtime.Must(meshContext.Start(ctx))
-			<-ctx.Done()
+ 			<-ctx.Done()
 		})
 
 	return nil

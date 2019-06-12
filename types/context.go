@@ -53,7 +53,7 @@ func NewContext(namespace string, config *rest.Config) *Context {
 }
 
 func (c *Context) Start(ctx context.Context) error {
-	return start.All(ctx, 5,
+	return start.All(ctx, 7,
 		c.Apps,
 		c.Core,
 		c.Extensions,

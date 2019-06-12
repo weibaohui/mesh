@@ -6,6 +6,7 @@ import (
 	"github.com/emicklei/go-restful"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/server"
+	"github.com/weibaohui/mesh/pkg/webapi/ui"
 	"io/ioutil"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -18,13 +19,13 @@ import (
 func Start() {
 	container := restful.NewContainer()
 	ws := new(restful.WebService)
-	ws.Route(ws.POST("/version").
-		To(ports).
+	ws.Route(ws.POST("/version").To(ports).
 		Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/tt").To(tt).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
 	container.Add(ws)
+	 fmt.Println("SERVER 9999")
 	log.Fatal(http.ListenAndServe(":9999", container))
-
 }
 
 func tt(request *restful.Request, response *restful.Response) {

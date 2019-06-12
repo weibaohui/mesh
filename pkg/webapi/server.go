@@ -1,6 +1,7 @@
 package webapi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/emicklei/go-restful"
@@ -16,16 +17,25 @@ import (
 	"net/http"
 )
 
-func Start() {
+func Start(ctx context.Context) {
 	container := restful.NewContainer()
 	ws := new(restful.WebService)
+	container.Filter(sync)
 	ws.Route(ws.POST("/version").To(ports).
 		Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/tt").To(tt).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
 	container.Add(ws)
-	 fmt.Println("SERVER 9999")
+	fmt.Println("SERVER 9999")
+
 	log.Fatal(http.ListenAndServe(":9999", container))
+}
+
+func sync(request *restful.Request, response *restful.Response, chain *restful.FilterChain) {
+	//todo 放到这里是因为 sync这个地方没有真正执行需要先触发一次？
+	mCtx := server.GlobalContext()
+	mCtx.Core.Sync(context.TODO())
+	chain.ProcessFilter(request, response)
 }
 
 func tt(request *restful.Request, response *restful.Response) {

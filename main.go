@@ -116,7 +116,7 @@ func run(c *cli.Context) error {
 
 	ctx := signals.SetupSignalHandler(context.Background())
 
-	go webapi.Start()
+	go webapi.Start(ctx)
 	if err := server.Startup(ctx, namespace, kubeconfig); err != nil {
 		return err
 	}

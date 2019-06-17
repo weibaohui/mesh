@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	"github.com/emicklei/go-restful"
-	"github.com/sirupsen/logrus"
 	"github.com/weibaohui/mesh/pkg/server"
 	"k8s.io/apimachinery/pkg/labels"
 )
@@ -20,8 +19,7 @@ type simplePodInfo struct {
 
 func ListPod(request *restful.Request, response *restful.Response) {
 	ns := request.QueryParameter("ns")
-	logrus.Println(ns)
-	mCtx := server.GlobalContext()
+ 	mCtx := server.GlobalContext()
 	list, err := mCtx.Core.Core().V1().Pod().Cache().List(ns, labels.Everything())
 	if err != nil {
 		fmt.Println(err.Error())

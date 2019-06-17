@@ -28,6 +28,15 @@ func Start(ctx context.Context) {
 	container.Add(ws)
 	fmt.Println("SERVER 9999")
 
+
+	// Add container filter to enable CORS
+	cors := restful.CrossOriginResourceSharing{
+		ExposeHeaders:  []string{"X-My-Header"},
+		AllowedHeaders: []string{"Content-Type", "Accept"},
+		AllowedMethods: []string{"GET", "POST"},
+		CookiesAllowed: false,
+		Container:      container}
+	container.Filter(cors.Filter)
 	log.Fatal(http.ListenAndServe(":9999", container))
 }
 

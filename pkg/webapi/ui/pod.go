@@ -26,7 +26,6 @@ func ListPod(request *restful.Request, response *restful.Response) {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	logrus.Info(list)
 	var podlist []simplePodInfo
 	for _, p := range list {
 		podlist = append(podlist, simplePodInfo{
@@ -39,6 +38,17 @@ func ListPod(request *restful.Request, response *restful.Response) {
 			Age:       p.CreationTimestamp.String(),
 		})
 	}
+	i := struct {
+		Code  int             `json:"code"`
+		Count int             `json:"count"`
+		Data  []simplePodInfo `json:"data"`
+		Msg   string          `json:"msg"`
+	}{
+		Code:  0,
+		Count: len(podlist),
+		Data:  podlist,
+		Msg:   "",
+	}
 
-	response.WriteAsJson(podlist)
+	response.WriteAsJson(i)
 }

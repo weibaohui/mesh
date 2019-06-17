@@ -9,19 +9,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/rancher/wrangler/pkg/signals"
+	"github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/server"
 	"github.com/weibaohui/mesh/pkg/version"
 	"github.com/weibaohui/mesh/pkg/webapi"
-	"net/http"
+	"github.com/weibaohui/mesh/ui"
+	"k8s.io/klog"
 	_ "net/http/pprof"
 	"os"
-	"strings"
-
-	"github.com/rancher/wrangler/pkg/signals"
-	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli"
-	"k8s.io/klog"
 )
 
 var (
@@ -93,30 +91,17 @@ func main() {
 }
 
 func run(c *cli.Context) error {
-	go func() {
-		logrus.Fatal(http.ListenAndServe("localhost:6061", nil))
-	}()
+
 	debug = true
 	if debug {
 		setupDebugLogging()
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
-	kubeconfig = strings.Replace(kubeconfig, "${HOME}", homeDir, -1)
-	kubeconfig = strings.Replace(kubeconfig, "$HOME", homeDir, -1)
-
-	if os.Getenv("MESH_IN_CLUSTER") != "" {
-		kubeconfig = ""
-	}
-
 	ctx := signals.SetupSignalHandler(context.Background())
 
 	go webapi.Start(ctx)
+	go ui.Start()
 	if err := server.Startup(ctx, namespace, kubeconfig); err != nil {
 		return err
 	}

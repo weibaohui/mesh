@@ -70,7 +70,7 @@ func ListPod(request *restful.Request, response *restful.Response) {
 			Status:    buildStatus(p),
 			PodIP:     p.Status.PodIP,
 			Restart:   buildRestartCount(p),
-			Age:       p.CreationTimestamp.Time,
+			Age:       p.Status.StartTime.Time,
 		})
 	}
 	sort.Slice(podlist, func(i, j int) bool {

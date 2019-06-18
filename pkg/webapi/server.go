@@ -12,6 +12,7 @@ import (
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
+	"time"
 
 	"log"
 	"net/http"
@@ -20,14 +21,12 @@ import (
 func Start(ctx context.Context) {
 	container := restful.NewContainer()
 	ws := new(restful.WebService)
-	container.Filter(sync)
 	ws.Route(ws.POST("/version").To(ports).
 		Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/tt").To(tt).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
 	container.Add(ws)
 	fmt.Println("SERVER 9999")
-
 
 	// Add container filter to enable CORS
 	cors := restful.CrossOriginResourceSharing{
@@ -37,14 +36,23 @@ func Start(ctx context.Context) {
 		CookiesAllowed: false,
 		Container:      container}
 	container.Filter(cors.Filter)
+
+	go sync(ctx)
 	log.Fatal(http.ListenAndServe(":9999", container))
 }
 
-func sync(request *restful.Request, response *restful.Response, chain *restful.FilterChain) {
-	//todo 放到这里是因为 sync这个地方没有真正执行需要先触发一次？
-	mCtx := server.GlobalContext()
-	mCtx.Core.Sync(context.TODO())
-	chain.ProcessFilter(request, response)
+func sync(ctx context.Context) {
+
+	ticker := time.NewTicker(time.Second * 2)
+	for {
+		select {
+		case <-ticker.C:
+			mCtx := server.GlobalContext()
+			mCtx.Core.Sync(ctx)
+			// logrus.Info("sync")
+		}
+	}
+
 }
 
 func tt(request *restful.Request, response *restful.Response) {

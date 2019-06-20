@@ -43,14 +43,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 	// Group=mesh.oauthd.com, Version=v1
 	case v1.SchemeGroupVersion.WithResource("apps"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().Apps().Informer()}, nil
-	case v1.SchemeGroupVersion.WithResource("clusterdomains"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().ClusterDomains().Informer()}, nil
-	case v1.SchemeGroupVersion.WithResource("externalservices"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().ExternalServices().Informer()}, nil
-	case v1.SchemeGroupVersion.WithResource("routers"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().Routers().Informer()}, nil
-	case v1.SchemeGroupVersion.WithResource("services"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Mesh().V1().Services().Informer()}, nil
 
 	}
 

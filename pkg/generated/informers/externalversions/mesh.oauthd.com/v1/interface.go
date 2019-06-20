@@ -14,14 +14,6 @@ import (
 type Interface interface {
 	// Apps returns a AppInformer.
 	Apps() AppInformer
-	// ClusterDomains returns a ClusterDomainInformer.
-	ClusterDomains() ClusterDomainInformer
-	// ExternalServices returns a ExternalServiceInformer.
-	ExternalServices() ExternalServiceInformer
-	// Routers returns a RouterInformer.
-	Routers() RouterInformer
-	// Services returns a ServiceInformer.
-	Services() ServiceInformer
 }
 
 type version struct {
@@ -38,24 +30,4 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 // Apps returns a AppInformer.
 func (v *version) Apps() AppInformer {
 	return &appInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// ClusterDomains returns a ClusterDomainInformer.
-func (v *version) ClusterDomains() ClusterDomainInformer {
-	return &clusterDomainInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// ExternalServices returns a ExternalServiceInformer.
-func (v *version) ExternalServices() ExternalServiceInformer {
-	return &externalServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// Routers returns a RouterInformer.
-func (v *version) Routers() RouterInformer {
-	return &routerInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
-}
-
-// Services returns a ServiceInformer.
-func (v *version) Services() ServiceInformer {
-	return &serviceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }

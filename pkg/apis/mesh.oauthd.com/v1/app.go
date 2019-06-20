@@ -21,14 +21,13 @@ type AppSpec struct {
 }
 
 type Revision struct {
-	Public          bool         `json:"public,omitempty"`
-	ServiceName     string       `json:"serviceName,omitempty"`
-	Version         string       `json:"Version,omitempty"`
-	AdjustedWeight  int          `json:"adjustedWeight,omitempty"`
-	Weight          int          `json:"weight,omitempty"`
-	Scale           int          `json:"scale,omitempty"`
-	ScaleStatus     *ScaleStatus `json:"scaleStatus,omitempty"`
-	DeploymentReady bool         `json:"deploymentReady,omitempty"`
+	Public          bool   `json:"public,omitempty"`
+	ServiceName     string `json:"serviceName,omitempty"`
+	Version         string `json:"Version,omitempty"`
+	AdjustedWeight  int    `json:"adjustedWeight,omitempty"`
+	Weight          int    `json:"weight,omitempty"`
+	Scale           int    `json:"scale,omitempty"`
+	DeploymentReady bool   `json:"deploymentReady,omitempty"`
 }
 
 type ServiceObservedWeight struct {

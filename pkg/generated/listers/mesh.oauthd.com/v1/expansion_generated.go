@@ -13,35 +13,3 @@ type AppListerExpansion interface{}
 // AppNamespaceListerExpansion allows custom methods to be added to
 // AppNamespaceLister.
 type AppNamespaceListerExpansion interface{}
-
-// ClusterDomainListerExpansion allows custom methods to be added to
-// ClusterDomainLister.
-type ClusterDomainListerExpansion interface{}
-
-// ClusterDomainNamespaceListerExpansion allows custom methods to be added to
-// ClusterDomainNamespaceLister.
-type ClusterDomainNamespaceListerExpansion interface{}
-
-// ExternalServiceListerExpansion allows custom methods to be added to
-// ExternalServiceLister.
-type ExternalServiceListerExpansion interface{}
-
-// ExternalServiceNamespaceListerExpansion allows custom methods to be added to
-// ExternalServiceNamespaceLister.
-type ExternalServiceNamespaceListerExpansion interface{}
-
-// RouterListerExpansion allows custom methods to be added to
-// RouterLister.
-type RouterListerExpansion interface{}
-
-// RouterNamespaceListerExpansion allows custom methods to be added to
-// RouterNamespaceLister.
-type RouterNamespaceListerExpansion interface{}
-
-// ServiceListerExpansion allows custom methods to be added to
-// ServiceLister.
-type ServiceListerExpansion interface{}
-
-// ServiceNamespaceListerExpansion allows custom methods to be added to
-// ServiceNamespaceLister.
-type ServiceNamespaceListerExpansion interface{}

@@ -17,12 +17,8 @@ func main() {
 		Groups: map[string]args.Group{
 			"mesh.oauthd.com": {
 				Types: []interface{}{
-					meshv1.ExternalService{},
-					meshv1.Router{},
 					meshv1.App{},
-					meshv1.Service{},
-					meshv1.ClusterDomain{},
-				},
+ 				},
 				GenerateTypes: true,
 			},
 		},

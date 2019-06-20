@@ -47,8 +47,8 @@ func sync(ctx context.Context) {
 	for {
 		select {
 		case <-ticker.C:
-			mCtx := server.GlobalContext()
-			mCtx.Core.Sync(ctx)
+			// mCtx := server.GlobalContext()
+			// mCtx.Core.Sync(ctx)
 			// logrus.Info("sync")
 		}
 	}

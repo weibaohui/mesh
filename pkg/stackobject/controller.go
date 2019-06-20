@@ -91,11 +91,14 @@ func (o *Controller) OnChange(key string, obj runtime.Object) (runtime.Object, e
 	}
 
 	desireset := o.Apply.WithOwner(obj)
-	if svc, ok := obj.(*v1.Service); ok && !svc.Spec.DisableServiceMesh {
-		for _, i := range o.injectors {
-			desireset = desireset.WithInjectorName(i)
-		}
-	}
+
+	// 容器自动注入
+	// if svc, ok := obj.(*v1.Service); ok && !svc.Spec.DisableServiceMesh {
+	// 	for _, i := range o.injectors {
+	// 		desireset = desireset.WithInjectorName(i)
+	// 	}
+	// }
+
 	return obj, o.getCondition().Do(func() (runtime.Object, error) {
 		return obj, desireset.Apply(os)
 	})

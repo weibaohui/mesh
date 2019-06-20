@@ -47,6 +47,14 @@ type serviceHandler struct {
 }
 
 func (s serviceHandler) populate(obj runtime.Object, namespace *corev1.Namespace, os *objectset.ObjectSet) error {
+	// list, e := s.deployCache.List("", labels.Everything())
+	// if e != nil {
+	// 	fmt.Println(e)
+	// }
+	// for _, v := range list {
+	// 	println(v.Name)
+	// }
+
 	app := obj.(*meshv1.App)
 	if app == nil {
 		return nil

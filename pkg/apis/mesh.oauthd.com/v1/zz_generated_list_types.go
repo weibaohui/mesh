@@ -14,40 +14,6 @@ import (
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// ExternalServiceList is a list of ExternalService resources
-type ExternalServiceList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata"`
-
-	Items []ExternalService `json:"items"`
-}
-
-func NewExternalService(namespace, name string, obj ExternalService) *ExternalService {
-	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("ExternalService").ToAPIVersionAndKind()
-	obj.Name = name
-	obj.Namespace = namespace
-	return &obj
-}
-
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// RouterList is a list of Router resources
-type RouterList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata"`
-
-	Items []Router `json:"items"`
-}
-
-func NewRouter(namespace, name string, obj Router) *Router {
-	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("Router").ToAPIVersionAndKind()
-	obj.Name = name
-	obj.Namespace = namespace
-	return &obj
-}
-
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
 // AppList is a list of App resources
 type AppList struct {
 	metav1.TypeMeta `json:",inline"`
@@ -58,40 +24,6 @@ type AppList struct {
 
 func NewApp(namespace, name string, obj App) *App {
 	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("App").ToAPIVersionAndKind()
-	obj.Name = name
-	obj.Namespace = namespace
-	return &obj
-}
-
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// ServiceList is a list of Service resources
-type ServiceList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata"`
-
-	Items []Service `json:"items"`
-}
-
-func NewService(namespace, name string, obj Service) *Service {
-	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("Service").ToAPIVersionAndKind()
-	obj.Name = name
-	obj.Namespace = namespace
-	return &obj
-}
-
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// ClusterDomainList is a list of ClusterDomain resources
-type ClusterDomainList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata"`
-
-	Items []ClusterDomain `json:"items"`
-}
-
-func NewClusterDomain(namespace, name string, obj ClusterDomain) *ClusterDomain {
-	obj.APIVersion, obj.Kind = SchemeGroupVersion.WithKind("ClusterDomain").ToAPIVersionAndKind()
 	obj.Name = name
 	obj.Namespace = namespace
 	return &obj

@@ -25,6 +25,7 @@ func Start(ctx context.Context) {
 		Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/tt").To(tt).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/deploy/inject/{ns}/{name}").To(ui.Inject).Produces(restful.MIME_JSON))
 	container.Add(ws)
 	fmt.Println("SERVER 9999")
 

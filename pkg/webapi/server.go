@@ -23,6 +23,8 @@ func Start(ctx context.Context) {
 	ws := new(restful.WebService)
 	ws.Route(ws.POST("/version").To(ports).
 		Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log").To(ui.GetContainerLog)).Produces(restful.MIME_JSON)
+	ws.Route(ws.GET("/tty").To(ui.Tty))
 	ws.Route(ws.GET("/tt").To(tt).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/deploy/inject/{ns}/{name}").To(ui.Inject).Produces(restful.MIME_JSON))

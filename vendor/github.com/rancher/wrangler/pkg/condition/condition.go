@@ -208,7 +208,7 @@ func setValue(cond reflect.Value, fieldName, newValue string) {
 	value := getFieldValue(cond, fieldName)
 	if value.String() != newValue {
 		value.SetString(newValue)
-		touchTS(cond)
+		// touchTS(cond)
 	}
 }
 

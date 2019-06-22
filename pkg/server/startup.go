@@ -53,15 +53,19 @@ var Crds = append(crd.NonNamespacedTypes(), crd.NamespacedTypes(
 	"template.config.istio.io/v1alpha2",
 )...)
 var globalContext *types.Context
+var globalKubeConfig string
 
+func GlobalKubeConfig() string  {
+	return globalKubeConfig
+}
 func GlobalContext() *types.Context {
 	if globalContext == nil {
 		return nil
 	}
-
   	return globalContext
 }
 func Startup(ctx context.Context, systemNamespace, kubeConfig string) error {
+	globalKubeConfig=kubeConfig
 	restConfig, err := clientcmd.BuildConfigFromFlags("", kubeConfig)
 	if err != nil {
 		return err

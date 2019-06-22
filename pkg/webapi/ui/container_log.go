@@ -46,7 +46,6 @@ func GetContainerLog(request *restful.Request, response *restful.Response) {
 	go func() {
 		for {
 			if _, _, err := c.NextReader(); err != nil {
-				fmt.Println("conn error 关闭连接")
 				cancel()
 				c.Close()
 				break
@@ -59,8 +58,7 @@ func GetContainerLog(request *restful.Request, response *restful.Response) {
 
 	go func() {
 		readerGroup.Wait()
-		fmt.Println("readerGroup 关闭连接")
-		close(logEvent)
+ 		close(logEvent)
 	}()
 	done := false
 	for !done {

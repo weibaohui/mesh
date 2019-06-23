@@ -11,9 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"io"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"net/http"
 )
@@ -24,7 +22,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 // 	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log")
-func GetContainerLog(request *restful.Request, response *restful.Response) {
+func PodLog(request *restful.Request, response *restful.Response) {
 	params := request.PathParameters()
 	ns := params["ns"]
 	podName := params["podName"]
@@ -54,11 +52,11 @@ func GetContainerLog(request *restful.Request, response *restful.Response) {
 	}()
 	logEvent := make(chan []byte)
 
-	LogReader(ctx, readerGroup, logEvent, ns, podName, containerName)
+	logReader(ctx, readerGroup, logEvent, ns, podName, containerName)
 
 	go func() {
 		readerGroup.Wait()
- 		close(logEvent)
+		close(logEvent)
 	}()
 	done := false
 	for !done {
@@ -98,31 +96,10 @@ func writeData(c *websocket.Conn, buf []byte) error {
 	}
 	return messageWriter.Close()
 }
-func LogReader(ctx context.Context, eg *errgroup.Group, logStream chan []byte, ns, podName, containerName string) {
+func logReader(ctx context.Context, eg *errgroup.Group, logStream chan []byte, ns, podName, containerName string) {
 	eg.Go(func() error {
-		config, err := clientcmd.BuildConfigFromFlags("", "/Users/baohui/.kube/config")
-		if err != nil {
-			fmt.Println(err)
-		}
-		clientset, err := kubernetes.NewForConfig(config)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		req := clientset.CoreV1().RESTClient().Get().
-			Resource("pods").
-			Name(podName).
-			Namespace(ns).
-			SubResource("log").
-			VersionedParams(
-				&v1.PodLogOptions{
-					Container: containerName,
-					Follow:    true,
-				},
-				scheme.ParameterCodec,
-			)
 		mctx := server.GlobalContext()
-		req = mctx.K8s.CoreV1().RESTClient().Get().
+		req := mctx.K8s.CoreV1().RESTClient().Get().
 			Resource("pods").
 			Name(podName).
 			Namespace(ns).

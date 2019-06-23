@@ -12,8 +12,6 @@ import (
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
-	"time"
-
 	"log"
 	"net/http"
 )
@@ -23,8 +21,8 @@ func Start(ctx context.Context) {
 	ws := new(restful.WebService)
 	ws.Route(ws.POST("/version").To(ports).
 		Produces(restful.MIME_JSON))
-	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log").To(ui.GetContainerLog)).Produces(restful.MIME_JSON)
-	ws.Route(ws.GET("/tty").To(ui.Tty))
+	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log").To(ui.PodLog))
+	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/exec").To(ui.PodExec))
 	ws.Route(ws.GET("/tt").To(tt).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/deploy/inject/{ns}/{name}").To(ui.Inject).Produces(restful.MIME_JSON))
@@ -40,22 +38,7 @@ func Start(ctx context.Context) {
 		Container:      container}
 	container.Filter(cors.Filter)
 
-	go sync(ctx)
 	log.Fatal(http.ListenAndServe(":9999", container))
-}
-
-func sync(ctx context.Context) {
-
-	ticker := time.NewTicker(time.Second * 2)
-	for {
-		select {
-		case <-ticker.C:
-			// mCtx := server.GlobalContext()
-			// mCtx.Core.Sync(ctx)
-			// logrus.Info("sync")
-		}
-	}
-
 }
 
 func tt(request *restful.Request, response *restful.Response) {

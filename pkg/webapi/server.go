@@ -8,51 +8,35 @@ import (
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/server"
 	"github.com/weibaohui/mesh/pkg/webapi/ui"
+	"github.com/weibaohui/mesh/pkg/webapi/ui/container"
 	"io/ioutil"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/selection"
 	"log"
 	"net/http"
 )
 
 func Start(ctx context.Context) {
-	container := restful.NewContainer()
+	c := restful.NewContainer()
 	ws := new(restful.WebService)
 	ws.Route(ws.POST("/version").To(ports).
 		Produces(restful.MIME_JSON))
-	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log").To(ui.PodLog))
-	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/exec").To(ui.PodExec))
-	ws.Route(ws.GET("/tt").To(tt).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log").To(container.Log))
+	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/exec").To(container.Exec))
 	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/deploy/inject/{ns}/{name}").To(ui.Inject).Produces(restful.MIME_JSON))
-	container.Add(ws)
+	c.Add(ws)
 	fmt.Println("SERVER 9999")
 
-	// Add container filter to enable CORS
+	// Add c filter to enable CORS
 	cors := restful.CrossOriginResourceSharing{
 		ExposeHeaders:  []string{"X-My-Header"},
 		AllowedHeaders: []string{"Content-Type", "Accept"},
 		AllowedMethods: []string{"GET", "POST"},
 		CookiesAllowed: false,
-		Container:      container}
-	container.Filter(cors.Filter)
+		Container:      c}
+	c.Filter(cors.Filter)
 
-	log.Fatal(http.ListenAndServe(":9999", container))
-}
-
-func tt(request *restful.Request, response *restful.Response) {
-	mCtx := server.GlobalContext()
-	requirement, err := labels.NewRequirement("name", selection.NotIn, []string{"x"})
-	selector := labels.NewSelector().Add(*requirement)
-	list, err := mCtx.Apps.Apps().V1().Deployment().Cache().List("default", selector)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	for _, d := range list {
-		fmt.Println(d.Name)
-	}
-	response.WriteAsJson(list)
+	log.Fatal(http.ListenAndServe(":9999", c))
 }
 
 type instanceWeight struct {

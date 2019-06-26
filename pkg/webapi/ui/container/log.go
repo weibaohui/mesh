@@ -1,4 +1,4 @@
-package ui
+package container
 
 import (
 	"bufio"
@@ -21,8 +21,9 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
+
 // 	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log")
-func PodLog(request *restful.Request, response *restful.Response) {
+func Log(request *restful.Request, response *restful.Response) {
 	params := request.PathParameters()
 	ns := params["ns"]
 	podName := params["podName"]
@@ -52,7 +53,7 @@ func PodLog(request *restful.Request, response *restful.Response) {
 	}()
 	logEvent := make(chan []byte)
 
-	logReader(ctx, readerGroup, logEvent, ns, podName, containerName)
+	ReadLog(ctx, readerGroup, logEvent, ns, podName, containerName)
 
 	go func() {
 		readerGroup.Wait()
@@ -75,17 +76,6 @@ func PodLog(request *restful.Request, response *restful.Response) {
 
 }
 
-func GetFirstContainerName(ns string, podName string) (string, error) {
-	pod, err := server.GlobalContext().Core.Core().V1().Pod().Cache().Get(ns, podName)
-	if err != nil {
-		return "", err
-	}
-	if len(pod.Spec.Containers) == 0 {
-		return "", errors.New("没有容器")
-	}
-	return pod.Spec.Containers[0].Name, nil
-}
-
 func writeData(c *websocket.Conn, buf []byte) error {
 	messageWriter, err := c.NextWriter(websocket.TextMessage)
 	if err != nil {
@@ -96,7 +86,19 @@ func writeData(c *websocket.Conn, buf []byte) error {
 	}
 	return messageWriter.Close()
 }
-func logReader(ctx context.Context, eg *errgroup.Group, logStream chan []byte, ns, podName, containerName string) {
+func GetFirstContainerName(ns string, podName string) (string, error) {
+	mctx := server.GlobalContext()
+	pod, err := mctx.Core.Core().V1().Pod().Cache().Get(ns, podName)
+	if err != nil {
+		return "", err
+	}
+	if len(pod.Spec.Containers) == 0 {
+		return "", errors.New("没有容器")
+	}
+	return pod.Spec.Containers[0].Name, nil
+}
+
+func ReadLog(ctx context.Context, eg *errgroup.Group, logEvent chan []byte, ns, podName, containerName string) {
 	eg.Go(func() error {
 		mctx := server.GlobalContext()
 		req := mctx.K8s.CoreV1().RESTClient().Get().
@@ -111,21 +113,20 @@ func logReader(ctx context.Context, eg *errgroup.Group, logStream chan []byte, n
 				},
 				scheme.ParameterCodec,
 			)
-		readerCloser, err := req.Stream()
+		readCloser, err := req.Stream()
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Println("Stream", err)
 			return err
 		}
-
+		reader := bufio.NewReader(readCloser)
 		for {
-			reader := bufio.NewReader(readerCloser)
-			line, err := reader.ReadBytes('\n')
+			line, _, err := reader.ReadLine()
+			logEvent <- line
 			if err == io.EOF {
 				break
 			}
-			logStream <- line
 		}
-
 		return nil
 	})
+
 }

@@ -23,7 +23,7 @@ func YamlToFile(obj interface{}) {
 		fmt.Println(err)
 	}
 
-	err = ioutil.WriteFile("/Users/baohui/Desktop/rio/"+name+".yaml", bytes, os.ModePerm)
+	err = ioutil.WriteFile("/Users/baohui/Desktop/mesh/"+name+".yaml", bytes, os.ModePerm)
 	if err != nil {
 		fmt.Println("输出YAML文件时出错 ", name, err.Error())
 	}

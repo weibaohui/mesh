@@ -16,5 +16,7 @@ var (
 	MeshGateway              = "mesh"
 	ClusterDomainName        = "cluster.local"
 	IstioInjector            = "istio-injecter"
+	IstioInjection           = "istioInjectionEnable"
+	IstioProxy               = "istio-proxy"
 	DefaultShellExecCommand  = []string{"/bin/sh", "-c", `TERM=xterm-256color; export TERM; [ -x /bin/bash ] && ([ -x /usr/bin/script ] && /usr/bin/script -q -c "/bin/bash" /dev/null || exec /bin/bash) || exec /bin/sh`}
 )

@@ -18,4 +18,11 @@ func Merge(base map[string]string, overlay ...map[string]string) map[string]stri
 
 	return result
 }
-
+func GetValueFrom(maps map[string]string, key string) string {
+	for k, v := range maps {
+		if k == key {
+			return v
+		}
+	}
+	return ""
+}

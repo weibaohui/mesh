@@ -5,14 +5,13 @@ import (
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/server"
 	"github.com/weibaohui/mesh/pkg/utils"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Inject(request *restful.Request, response *restful.Response) {
 	ns := request.PathParameter("ns")
 	name := request.PathParameter("name")
 	mCtx := server.GlobalContext()
-	deployment, err := mCtx.Apps.Apps().V1().Deployment().Get(ns, name, v1.GetOptions{})
+	deployment, err := mCtx.Apps.Apps().V1().Deployment().Cache().Get(ns, name)
 	if err != nil {
 		response.WriteError(500, err)
 		return

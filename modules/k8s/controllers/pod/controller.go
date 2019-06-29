@@ -23,6 +23,9 @@ type PodHandler struct {
 }
 
 func (d *PodHandler) onChange(key string, pod *corev1.Pod) (*corev1.Pod, error) {
+	if pod == nil {
+		return nil, nil
+	}
 	fmt.Println("pod onChange", key, pod.Name, pod.Namespace)
 	return pod, nil
 }

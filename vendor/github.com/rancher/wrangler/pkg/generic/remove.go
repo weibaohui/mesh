@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	finalizerKey = "wrangler.cattle.io/"
+	finalizerKey = "mesh.oauthd.com/"
 )
 
 type Updater func(runtime.Object) (runtime.Object, error)

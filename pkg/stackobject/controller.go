@@ -5,9 +5,7 @@ import (
 	"github.com/rancher/mapper/convert"
 	"github.com/rancher/wrangler/pkg/condition"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
-	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/types"
-	"k8s.io/api/extensions/v1beta1"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -94,15 +92,15 @@ func (o *Controller) OnChange(key string, obj runtime.Object) (runtime.Object, e
 
 	desireset := o.Apply.WithOwner(obj)
 
-	// 容器自动注入
-	if deploy, ok := obj.(*v1beta1.Deployment); ok  {
-		an := deploy.GetAnnotations()
-		if an[constants.IstioInjector] == "true" {
-			for _, i := range o.injectors {
-				desireset = desireset.WithInjectorName(i)
-			}
-		}
-	}
+	// // 容器自动注入
+	// if deploy, ok := obj.(*v1beta1.Deployment); ok  {
+	// 	an := deploy.GetAnnotations()
+	// 	if an[constants.IstioInjector] == "true" {
+	// 		for _, i := range o.injectors {
+	// 			desireset = desireset.WithInjectorName(i)
+	// 		}
+	// 	}
+	// }
 
 	return obj, o.getCondition().Do(func() (runtime.Object, error) {
 		return obj, desireset.Apply(os)

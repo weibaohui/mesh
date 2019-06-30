@@ -47,12 +47,14 @@ func (d *DeploymentHandler) onChange(key string, deploy *v1.Deployment) (*v1.Dep
 	}
 	fmt.Println("deploy onChange", key, deploy.Name, deploy.Namespace)
 	d.fillTypeMeta(deploy)
-	d.updateAppName(deploy)
 
 	// 检查是否需要注入istio
 	annotations := deploy.ObjectMeta.GetAnnotations()
 	inject := utils.GetValueFrom(annotations, constants.IstioInjectionEnable)
 	if inject == "true" {
+		// 纳入管理的
+		d.updateAppName(deploy)
+
 		if !d.injected(deploy) {
 			injectTemplate, err := d.injectTemplate(deploy)
 			injectTemplate.ObjectMeta = deploy.ObjectMeta
@@ -117,7 +119,12 @@ func (d *DeploymentHandler) updateAppName(deployment *v1.Deployment) {
 			"app": deployment.Name,
 		})
 		deployment.SetLabels(merge)
-
+	}
+	if !utils.HasLabel(deployLabels, "version") {
+		merge := utils.Merge(deployLabels, map[string]string{
+			"version": "v1",
+		})
+		deployment.SetLabels(merge)
 	}
 	// pod 设置appName
 	meta := &deployment.Spec.Template.ObjectMeta
@@ -126,6 +133,12 @@ func (d *DeploymentHandler) updateAppName(deployment *v1.Deployment) {
 		if !utils.HasLabel(podLabels, "app") {
 			merge := utils.Merge(podLabels, map[string]string{
 				"app": deployment.Name,
+			})
+			meta.SetLabels(merge)
+		}
+		if !utils.HasLabel(podLabels, "version") {
+			merge := utils.Merge(podLabels, map[string]string{
+				"version": "v1",
 			})
 			meta.SetLabels(merge)
 		}

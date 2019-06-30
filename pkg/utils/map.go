@@ -26,3 +26,12 @@ func GetValueFrom(maps map[string]string, key string) string {
 	}
 	return ""
 }
+
+func HasLabel(maps map[string]string, key string) bool {
+	for k := range maps {
+		if k == key {
+			return true
+		}
+	}
+	return false
+}

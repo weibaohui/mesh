@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	v12 "github.com/rancher/wrangler-api/pkg/generated/controllers/apps/v1"
+	"github.com/sirupsen/logrus"
 	"github.com/weibaohui/mesh/modules/istio/pkg/istio/config"
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/utils"
@@ -19,6 +20,7 @@ func Register(ctx context.Context, mctx *types.Context) error {
 		mctx:        mctx,
 		namespace:   mctx.Namespace,
 		deployCache: mctx.Apps.Apps().V1().Deployment().Cache(),
+		log:         logrus.WithField("name", "k8s-deploy"),
 	}
 	mctx.Apps.Apps().V1().Deployment().OnChange(ctx, "k8s-deploy-change", s.onChange)
 	mctx.Apps.Apps().V1().Deployment().OnRemove(ctx, "k8s-deploy-change", s.onRemove)
@@ -29,6 +31,7 @@ type DeploymentHandler struct {
 	mctx        *types.Context
 	namespace   string
 	deployCache v12.DeploymentCache
+	log         *logrus.Entry
 }
 
 func (d *DeploymentHandler) onRemove(key string, deploy *v1.Deployment) (*v1.Deployment, error) {
@@ -44,22 +47,25 @@ func (d *DeploymentHandler) onChange(key string, deploy *v1.Deployment) (*v1.Dep
 	}
 	fmt.Println("deploy onChange", key, deploy.Name, deploy.Namespace)
 	d.fillTypeMeta(deploy)
+	d.updateAppName(deploy)
+
+	// 检查是否需要注入istio
 	annotations := deploy.ObjectMeta.GetAnnotations()
-	inject := utils.GetValueFrom(annotations, constants.IstioInjection)
+	inject := utils.GetValueFrom(annotations, constants.IstioInjectionEnable)
 	if inject == "true" {
 		if !d.injected(deploy) {
-			// deploy.Status=v1.DeploymentStatus{}
 			injectTemplate, err := d.injectTemplate(deploy)
 			injectTemplate.ObjectMeta = deploy.ObjectMeta
-			if err == nil {
-				_, err := d.mctx.Apps.Apps().V1().Deployment().Update(injectTemplate)
-				if err != nil {
-					fmt.Println(err.Error())
-				}
+			if err != nil {
+				d.log.Errorf("injectTemplate err :%s", err.Error())
 			}
+			deploy = injectTemplate
 		}
 	}
-
+	err := d.updateDeployment(deploy)
+	if err != nil {
+		d.log.Errorf("Deployment Update err :%s", err.Error())
+	}
 	return deploy, nil
 }
 
@@ -101,4 +107,31 @@ func (d *DeploymentHandler) injectTemplate(deploy *v1.Deployment) (*v1.Deploymen
 	err = json.Unmarshal(bytes, deployment)
 
 	return deployment, err
+}
+
+func (d *DeploymentHandler) updateAppName(deployment *v1.Deployment) {
+	// deploy 自身设置appName
+	deployLabels := deployment.GetLabels()
+	if !utils.HasLabel(deployLabels, "app") {
+		merge := utils.Merge(deployLabels, map[string]string{
+			"app": deployment.Name,
+		})
+		deployment.SetLabels(merge)
+
+	}
+	// pod 设置appName
+	meta := &deployment.Spec.Template.ObjectMeta
+	if meta != nil {
+		podLabels := meta.GetLabels()
+		if !utils.HasLabel(podLabels, "app") {
+			merge := utils.Merge(podLabels, map[string]string{
+				"app": deployment.Name,
+			})
+			meta.SetLabels(merge)
+		}
+	}
+}
+func (d *DeploymentHandler) updateDeployment(deployment *v1.Deployment) (err error) {
+	deployment, err = d.mctx.Apps.Apps().V1().Deployment().Update(deployment)
+	return err
 }

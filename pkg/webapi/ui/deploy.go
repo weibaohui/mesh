@@ -21,7 +21,7 @@ func Inject(request *restful.Request, response *restful.Response) {
 	}
 	annotations := deployment.GetAnnotations()
 	annotations = utils.Merge(annotations, map[string]string{
-		constants.IstioInjection: "true",
+		constants.IstioInjectionEnable: "true",
 	})
 	deployment.SetAnnotations(annotations)
 	update, err := mCtx.Apps.Apps().V1().Deployment().Update(deployment)

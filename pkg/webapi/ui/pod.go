@@ -3,7 +3,9 @@ package ui
 import (
 	"fmt"
 	"github.com/emicklei/go-restful"
+	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/server"
+	"github.com/weibaohui/mesh/pkg/utils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"sort"
@@ -11,13 +13,15 @@ import (
 )
 
 type simplePodInfo struct {
-	Name      string    `json:"name"`
-	Namespace string    `json:"namespace"`
-	Ready     string    `json:"ready"`
-	PodIP     string    `json:"pod_ip"`
-	Status    string    `json:"status"`
-	Restart   int32     `json:"restart"`
-	Age       time.Time `json:"age"`
+	Deploy     string    `json:"deploy"`
+	Name       string    `json:"name"`
+	Namespace  string    `json:"namespace"`
+	Ready      string    `json:"ready"`
+	PodIP      string    `json:"podIp"`
+	Status     string    `json:"status"`
+	Restart    int32     `json:"restart"`
+	Age        time.Time `json:"age"`
+	MeshEnable string    `json:"meshEnable"`
 }
 
 func buildStatus(pod *v1.Pod) string {
@@ -63,18 +67,24 @@ func ListPod(request *restful.Request, response *restful.Response) {
 	}
 	var podlist []simplePodInfo
 	for _, p := range list {
+		fmt.Println(p.Name,p.GetAnnotations())
+		fmt.Println()
+		fmt.Println()
+		fmt.Println()
 		podlist = append(podlist, simplePodInfo{
-			Name:      p.Name,
-			Namespace: p.Namespace,
-			Ready:     buildReadyStatusCount(p),
-			Status:    buildStatus(p),
-			PodIP:     p.Status.PodIP,
-			Restart:   buildRestartCount(p),
-			Age:       p.Status.StartTime.Time,
+			Deploy:     utils.GetValueFrom(p.GetLabels(), "app"),
+			Name:       p.Name,
+			Namespace:  p.Namespace,
+			Ready:      buildReadyStatusCount(p),
+			PodIP:      p.Status.PodIP,
+			Status:     buildStatus(p),
+			Restart:    buildRestartCount(p),
+			Age:        p.Status.StartTime.Time,
+			MeshEnable: utils.GetValueFrom(p.GetAnnotations(), constants.IstioInjectionEnable),
 		})
 	}
 	sort.Slice(podlist, func(i, j int) bool {
-		return podlist[i].Age.After( podlist[j].Age)
+		return podlist[i].Age.After(podlist[j].Age)
 	})
 	i := struct {
 		Code  int             `json:"code"`

@@ -8,6 +8,7 @@ import (
 	"github.com/weibaohui/mesh/pkg/utils"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 	"sort"
 )
 
@@ -58,8 +59,15 @@ func buildRestartCount(pod *v1.Pod) int32 {
 
 func List(request *restful.Request, response *restful.Response) {
 	ns := request.QueryParameter("ns")
+	appName := request.QueryParameter("appName")
+	selector := labels.Everything()
+	if len(appName) > 0 {
+		r, _ := labels.NewRequirement("app", selection.Equals, []string{appName})
+		selector = labels.NewSelector().Add(*r)
+	}
+
 	mCtx := server.GlobalContext()
-	list, err := mCtx.Core.Core().V1().Pod().Cache().List(ns, labels.Everything())
+	list, err := mCtx.Core.Core().V1().Pod().Cache().List(ns, selector)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

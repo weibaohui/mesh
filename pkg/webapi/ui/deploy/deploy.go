@@ -23,7 +23,7 @@ type Info struct {
 }
 
 func List(request *restful.Request, response *restful.Response) {
-	ns := request.PathParameter("ns")
+	ns := request.QueryParameter("ns")
 	mCtx := server.GlobalContext()
 	list, err := mCtx.Apps.Apps().V1().Deployment().Cache().List(ns, labels.Everything())
 	if err != nil {

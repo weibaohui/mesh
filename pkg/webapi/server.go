@@ -40,6 +40,12 @@ func Start(ctx context.Context) {
 
 	log.Fatal(http.ListenAndServe(":9999", c))
 }
+//
+// func mctx(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+// 	ctx := context.WithValue(req.Request.Context(), "mctx", server.GlobalContext())
+// 	req.Request.Context() = ctx
+// 	chain.ProcessFilter(req, resp)
+// }
 
 type instanceWeight struct {
 	Instance string `json:"instance"`

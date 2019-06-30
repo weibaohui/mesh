@@ -7,8 +7,9 @@ import (
 	"github.com/emicklei/go-restful"
 	v1 "github.com/weibaohui/mesh/pkg/apis/mesh.oauthd.com/v1"
 	"github.com/weibaohui/mesh/pkg/server"
-	"github.com/weibaohui/mesh/pkg/webapi/ui"
 	"github.com/weibaohui/mesh/pkg/webapi/ui/container"
+	"github.com/weibaohui/mesh/pkg/webapi/ui/deploy"
+	"github.com/weibaohui/mesh/pkg/webapi/ui/pod"
 	"io/ioutil"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
@@ -22,8 +23,9 @@ func Start(ctx context.Context) {
 		Produces(restful.MIME_JSON))
 	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/log").To(container.Log))
 	ws.Route(ws.GET("/ns/{ns}/podName/{podName}/exec").To(container.Exec))
-	ws.Route(ws.GET("/pods").To(ui.ListPod).Produces(restful.MIME_JSON))
-	ws.Route(ws.GET("/deploy/inject/{ns}/{name}").To(ui.Inject).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/pods").To(pod.List).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/deploys").To(deploy.List).Produces(restful.MIME_JSON))
+	ws.Route(ws.GET("/deploy/inject/{ns}/{name}").To(deploy.Inject).Produces(restful.MIME_JSON))
 	c.Add(ws)
 	fmt.Println("SERVER 9999")
 

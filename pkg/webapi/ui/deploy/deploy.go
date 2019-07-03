@@ -7,11 +7,9 @@ import (
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/server"
 	"github.com/weibaohui/mesh/pkg/utils"
-	v1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"sort"
-	"strings"
 )
 
 type Info struct {
@@ -19,7 +17,6 @@ type Info struct {
 	Namespace  string `json:"namespace"`
 	Ready      string `json:"ready"`
 	MeshEnable string `json:"meshEnable"`
-	Containers string `json:"containers"`
 }
 
 func List(request *restful.Request, response *restful.Response) {
@@ -39,7 +36,6 @@ func List(request *restful.Request, response *restful.Response) {
 			Namespace:  p.Namespace,
 			Ready:      fmt.Sprintf("%d/%d", p.Status.AvailableReplicas, p.Status.Replicas),
 			MeshEnable: utils.GetValueFrom(p.GetAnnotations(), constants.IstioInjectionEnable),
-			Containers: buildContainers(p),
 		})
 	}
 	sort.Slice(infos, func(i, j int) bool {
@@ -60,14 +56,6 @@ func List(request *restful.Request, response *restful.Response) {
 	response.WriteAsJson(i)
 }
 
-func buildContainers(d *v1.Deployment) string {
-	var cNames string
-	for _, c := range d.Spec.Template.Spec.Containers {
-		cNames = cNames + c.Name + ","
-	}
-	cNames = strings.TrimSuffix(cNames, ",")
-	return cNames
-}
 func Inject(request *restful.Request, response *restful.Response) {
 	ns := request.PathParameter("ns")
 	name := request.PathParameter("name")

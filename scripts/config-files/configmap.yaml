@@ -29,7 +29,7 @@ data:
     initContainers:
     [[ if ne (annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode) "NONE" ]]
     - name: istio-init
-      image: "docker.io/istio/proxy_init:1.1.7"
+      image: "docker.io/istio/proxy_init:1.2.2"
       args:
       - "-p"
       - [[ .MeshConfig.ProxyListenPort ]]

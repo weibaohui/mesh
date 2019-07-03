@@ -10,6 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
 	"sort"
+	"strings"
 )
 
 type Info struct {
@@ -21,6 +22,7 @@ type Info struct {
 	Status     string `json:"status"`
 	Restart    int32  `json:"restart"`
 	MeshEnable string `json:"meshEnable"`
+	Containers string `json:"containers"`
 }
 
 func buildStatus(pod *v1.Pod) string {
@@ -57,6 +59,14 @@ func buildRestartCount(pod *v1.Pod) int32 {
 	return c
 }
 
+func buildContainers(d *v1.Pod) string {
+	var cNames string
+	for _, c := range d.Spec.Containers {
+		cNames = cNames + c.Name + ","
+	}
+	cNames = strings.TrimSuffix(cNames, ",")
+	return cNames
+}
 func List(request *restful.Request, response *restful.Response) {
 	ns := request.QueryParameter("ns")
 	appName := request.QueryParameter("appName")
@@ -82,6 +92,7 @@ func List(request *restful.Request, response *restful.Response) {
 			Status:     buildStatus(p),
 			Restart:    buildRestartCount(p),
 			MeshEnable: utils.GetValueFrom(p.GetAnnotations(), constants.IstioInjectionEnable),
+			Containers: buildContainers(p),
 		})
 	}
 	sort.Slice(infos, func(i, j int) bool {

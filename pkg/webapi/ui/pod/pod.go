@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/selection"
 )
 
+// Info pod info
 type Info struct {
 	Deploy     string `json:"deploy"`
 	Name       string `json:"name"`
@@ -54,7 +55,7 @@ func buildReadyStatusCount(pod *v1.Pod) string {
 	var c int32
 	for _, cs := range pod.Status.ContainerStatuses {
 		if cs.Ready {
-			c += 1
+			c++
 		}
 
 	}
@@ -76,6 +77,8 @@ func buildContainers(d *v1.Pod) string {
 	cNames = strings.TrimSuffix(cNames, ",")
 	return cNames
 }
+
+// List 列表显示pod 信息
 func List(request *restful.Request, response *restful.Response) {
 	ns := request.QueryParameter("ns")
 	appName := request.QueryParameter("appName")

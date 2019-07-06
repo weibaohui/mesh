@@ -2,6 +2,9 @@ package pod
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+
 	"github.com/emicklei/go-restful"
 	"github.com/weibaohui/mesh/pkg/constants"
 	"github.com/weibaohui/mesh/pkg/server"
@@ -9,8 +12,6 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
-	"sort"
-	"strings"
 )
 
 type Info struct {
@@ -38,6 +39,14 @@ func buildStatus(pod *v1.Pod) string {
 			return string(pod.Status.Phase)
 		}
 	}
+	// for _, c := range pod.Status.ContainerStatuses {
+	// 	if c.State.Waiting != nil {
+	// 		return c.State.Waiting.Reason
+	// 	}
+	// 	if c.State.Terminated != nil {
+	// 		return c.State.Terminated.Reason
+	// 	}
+	// }
 	return ""
 }
 

@@ -9,6 +9,8 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+
 	"github.com/rancher/wrangler/pkg/signals"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -17,7 +19,6 @@ import (
 	"github.com/weibaohui/mesh/pkg/version"
 	"github.com/weibaohui/mesh/pkg/webapi"
 	"k8s.io/klog"
-	"os"
 )
 
 var (

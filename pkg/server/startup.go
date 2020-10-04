@@ -111,3 +111,10 @@ func Types(ctx context.Context, config *rest.Config) error {
 
 	return factory.BatchWait()
 }
+
+func GlobalContextAtK8() *types.Context {
+	if globalContext == nil {
+		return nil
+	}
+  	return globalContext
+}

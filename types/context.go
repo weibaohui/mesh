@@ -69,6 +69,10 @@ func BuildContext(ctx context.Context, namespace string, config *rest.Config) (c
 	return context.WithValue(ctx, contextKey{}, c), c
 }
 
+func BuildContextAtK8(ctx context.Context, namespace string, config *rest.Config) (context.Context, *Context) {
+	c := NewContext(namespace, config)
+	return context.WithValue(ctx, contextKey{}, c), c
+}
 func Register(f func(context.Context, *Context) error) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
 		return f(ctx, From(ctx))

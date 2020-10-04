@@ -74,7 +74,7 @@ func (d *DeploymentHandler) onChange(key string, deploy *v1.Deployment) (*v1.Dep
 
 // 填充TypeMeta
 func (d *DeploymentHandler) fillTypeMeta(deploy *v1.Deployment) {
-	deploy.TypeMeta.APIVersion = "extensions/v1beta1"
+	deploy.TypeMeta.APIVersion = "apps/v1"
 	deploy.TypeMeta.Kind = "Deployment"
 }
 

@@ -1,0 +1,6 @@
+type WorkLoadBuilder struct{
+  Name string
+  Type string 
+  ApiVersion string
+  MetaData string
+}

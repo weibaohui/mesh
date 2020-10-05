@@ -1,6 +1,7 @@
 package webapi
 
 import (
+	"encoding/json"
 	"fmt"
 
 	v1 "k8s.io/api/apps/v1"
@@ -38,7 +39,17 @@ func (w *WorkLoadBuilder) AddLabels(k, v string) *WorkLoadBuilder {
 	for k, v := range labels {
 		fmt.Println(k, v)
 	}
+	labels[k] = v
 	w.d.Spec.Template.Labels = labels
 	w.d.Spec.Selector.MatchLabels = labels
+	return w
+}
+
+func (w *WorkLoadBuilder) String() *WorkLoadBuilder {
+	bytes, err := json.Marshal(w)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println(string(bytes))
 	return w
 }

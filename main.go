@@ -77,7 +77,8 @@ func run(c *cli.Context) error {
 	if err := server.Startup(ctx, namespace, kubeconfig); err != nil {
 		return err
 	}
-
+	builder := webapi.WorkLoadBuilder{}
+	builder.Load("default", "weave-scope-app").String()
 	return nil
 }
 

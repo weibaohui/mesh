@@ -50,8 +50,7 @@ func NewFactoryFromConfig(config *rest.Config) (*Factory, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	informerFactory := informers.NewSharedInformerFactory(cs, 2*time.Hour)
+ 	informerFactory := informers.NewSharedInformerFactory(cs, 2*time.Hour)
 	return NewFactory(cs, informerFactory), nil
 }
 

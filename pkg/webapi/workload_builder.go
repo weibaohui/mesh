@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	v1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/weibaohui/mesh/pkg/server"
@@ -51,5 +52,19 @@ func (w *WorkLoadBuilder) String() *WorkLoadBuilder {
 		fmt.Println(err.Error())
 	}
 	fmt.Println(string(bytes))
+	return w
+}
+func (w *WorkLoadBuilder) Containers() []corev1.Container {
+	return w.d.Spec.Template.Spec.Containers
+}
+func (w *WorkLoadBuilder) SetImageByContainerName(image, containerName string) *WorkLoadBuilder {
+	containers := w.d.Spec.Template.Spec.Containers
+	for i := range containers {
+		c := containers[i]
+		if c.Name == containerName {
+			c.Image = image
+			break
+		}
+	}
 	return w
 }

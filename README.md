@@ -5,7 +5,7 @@ easy use of istio ，kubernetes
 
 ## 📝 开源许可证
 
-本 `mesh` 库遵守 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0) 许可证。1
+本 `mesh` 库遵守 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0) 许可证。
 
 ## 🙏 鸣谢
 

@@ -83,7 +83,7 @@ func run(c *cli.Context) error {
 }
 
 func setupDebugLogging() {
-	flag.Set("alsologtostderr", "true")
+	flag.Set("alsologtostderr1", "true")
 	klogFlags := flag.NewFlagSet("klog", flag.ExitOnError)
 	klog.InitFlags(klogFlags)
 }
